@@ -8,6 +8,8 @@ const TomaDePedido = () => {
   const [cantidad, setCantidad] = useState(1);
   const [pedidosPorMesa, setPedidosPorMesa] = useState({});
 
+  
+
   // Agrega un nuevo producto al pedido de la mesa específica.
   const agregarAlPedido = () => {
     if (!mesa) {
@@ -49,9 +51,19 @@ const TomaDePedido = () => {
     }
   };
 
+  const obtenerPedidos = async () => {
+    try {
+      const response = await axios.get('/api/data'); // Adjust '/api/data' to your specific endpoint
+      console.log(response.data); // Log the fetched data to the console
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   return (
     <div>
       <h2>Toma de Pedido</h2>
+      <button onClick={obtenerPedidos}>lol</button> 
       <div>
         <label>
           Número de Mesa:

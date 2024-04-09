@@ -9,9 +9,9 @@ const App = () => {
       <Routes>
         <Route exact path="/" element={<SeleccionArea />} />
         <Route path="/toma-de-pedido" element={<TomaDePedido />} />
-        {/* Agrega más rutas según sea necesario */}
       </Routes>
     </Router>
+    
   );
 };
 

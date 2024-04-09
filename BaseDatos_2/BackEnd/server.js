@@ -8,7 +8,7 @@ app.use(express.json());
 // Example endpoint to fetch data from your database
 app.get('/api/data', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM your_table_name');
+    const { rows } = await db.query('SELECT * FROM area');
     res.json(rows);
   } catch (error) {
     console.error(error);
