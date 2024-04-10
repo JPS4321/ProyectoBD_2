@@ -8,22 +8,24 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Aquí debes implementar la lógica de autenticación
-    // Por ejemplo, podrías hacer una petición POST a tu servidor
-    // axios.post('/api/login', { username, password })
-    //   .then(response => {
-    //     // Si es exitoso, puedes redireccionar o hacer algo con la respuesta
-    //     navigate('/seleccion-area');
-    //   })
-    //   .catch(error => {
-    //     // Manejar el error, por ejemplo, mostrando un mensaje
-    //     console.error('Error de autenticación', error);
-    //   });
-    
-    // Esta es solo una simulación, en un caso real, manejarías la autenticación
-    // con el backend y almacenarías el token en algún lugar (como localStorage)
-    console.log('Usuario autenticado con éxito');
-    navigate('/seleccion-area');
+    try {
+      const response = await axios.post('/api/login', { email: username, contrasena: password });
+      
+      if (response.data) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log('Usuario autenticado con éxito');y
+        navigate('/seleccion-area');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        // If the server returns a 401 Unauthorized status, display the login error message
+        alert('Usuario o contraseña equivocado');
+      } else {
+        console.error('Error de autenticación', error);
+      }
+    }
+
   };
 
   return (

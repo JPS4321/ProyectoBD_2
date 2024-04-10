@@ -15,6 +15,16 @@ app.get('/api/data', async (req, res) => {
   }
 });
 
+app.get('/api/users', async (req, res) => {
+  try {
+    const data = await pool.query('SELECT email, contrasena FROM usuario');
+    res.json(data.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
