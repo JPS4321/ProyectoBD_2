@@ -10,17 +10,15 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('/api/login', { email: username, contrasena: password });
-      
+      const response = await axios.post('http://localhost:3001/api/login', { email: username, contrasena: password });
+
       if (response.data) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        console.log('Usuario autenticado con éxito');y
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log('Usuario autenticado con éxito');
         navigate('/seleccion-area');
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        // If the server returns a 401 Unauthorized status, display the login error message
         alert('Usuario o contraseña equivocado');
       } else {
         console.error('Error de autenticación', error);

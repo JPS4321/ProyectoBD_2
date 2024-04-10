@@ -15,14 +15,30 @@ app.get('/api/data', async (req, res) => {
   }
 });
 
-app.get('/api/users', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   try {
-    const data = await pool.query('SELECT email, contrasena FROM usuario');
-    res.json(data.rows);
+    const { email, contrasena } = req.body;
+
+    const data = await pool.query('SELECT * FROM usuario WHERE email = $1', [email]);
+
+    if (data.rows.length > 0) {
+      const user = data.rows[0];
+
+      if (user.contrasena === contrasena) {
+        res.json({ message: 'Login successful', user }); 
+      } else {
+        res.status(401).json({ error: 'Usuario o contraseña equivocado' });
+      }
+    } else {
+      res.status(401).json({ error: 'Usuario o contraseña equivocado' });
+    }
   } catch (err) {
     console.error(err.message);
+    res.status(500).json({ error: 'Server error' });
   }
 });
+
+
 
 
 const PORT = process.env.PORT || 3001;
