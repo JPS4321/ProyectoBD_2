@@ -18,7 +18,6 @@ const App = () => {
         {/* Puedes seguir agregando rutas aquí según sea necesario */}
       </Routes>
     </Router>
-    
   );
 };
 

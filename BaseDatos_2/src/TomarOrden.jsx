@@ -9,3 +9,4 @@ const TomarOrden = () => {
     );
   };
   
+export default TomarOrden;
