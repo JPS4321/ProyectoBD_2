@@ -68,13 +68,17 @@ const TomarOrden = () => {
       backgroundColor: 'white',
       borderRadius: '5px',
       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      
     },
     input: {
       margin: '10px 0',
       padding: '10px',
       border: '1px solid #ccc',
+      
       borderRadius: '5px',
       width: '200px', // O el ancho que prefieras
+      
+      
     },
     button: {
       padding: '10px 20px',
@@ -84,6 +88,7 @@ const TomarOrden = () => {
       backgroundColor: '#4CAF50', // Verde para el botón
       color: 'white',
       cursor: 'pointer',
+      
     },
     pedidoContainer: {
       marginTop: '20px',
