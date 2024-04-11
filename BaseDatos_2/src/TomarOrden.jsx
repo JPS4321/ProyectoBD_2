@@ -57,7 +57,7 @@ const TomarOrden = () => {
       justifyContent: 'center',
       alignItems: 'center',
       width: '100vw',
-      height: '100vh',
+      minHeight: '100vh',
       backgroundColor: '#ADD8E6', // Color celeste para el fondo
     },
     formContainer: {

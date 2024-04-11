@@ -51,7 +51,7 @@ const Review = () => {
       alignItems: "center",
       justifyContent: "center",
       width: "100vw",
-      height: "160vh",
+      minHeight: "100vh",
       padding: "20px",
       boxSizing: "border-box",
       backgroundColor: '#ADD8E6',

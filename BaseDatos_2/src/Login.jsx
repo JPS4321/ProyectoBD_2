@@ -24,7 +24,7 @@ const Login = () => {
         console.error('Error de autenticación', error);
       }
     }
-  };
+  }; 
 
   /* Navegación Kou
   const handleSubmit = async (event) => {
