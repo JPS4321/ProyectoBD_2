@@ -111,6 +111,7 @@ const Review = () => {
     },
     label: {
       margin: "10px 0",
+      color: "black",
     },
     input: {
       padding: "0.5rem",
@@ -120,6 +121,9 @@ const Review = () => {
       backgroundColor: "white", 
       color: "black",
     },
+    letras: {
+      color: "black",
+    }
   };
 
   const buttonStyle = {
@@ -143,7 +147,7 @@ const Review = () => {
     <div style={styles.container}>
       <div style={styles.formContainer}>
         <h2 style={styles.title}>Encuesta de Servicio</h2>
-        <label>
+        <label style={styles.label}>>
           Califique la amabilidad del mesero entre 1 y 5
           <select
             style={styles.select}
@@ -157,7 +161,7 @@ const Review = () => {
             ))}
           </select>
         </label>
-        <label>
+        <label style={styles.label}>
           Califique la exactitud de lo recibido respecto a lo solicitado al
           mesero entre 1 y 5
           <select
@@ -174,7 +178,7 @@ const Review = () => {
         </label>
 
         <div style={styles.questionContainer}>
-          <p>¿Tiene alguna queja?</p>
+          <p style={styles.letras}>¿Tiene alguna queja?</p>
           <div style={styles.buttonGroup}>
             <button onClick={() => setTieneQueja(true)} style={styles.button}>
               Sí
@@ -197,7 +201,7 @@ const Review = () => {
             </label>
 
             <div style={styles.questionContainer}>
-              <p>Tipo de queja</p>
+              <p style={styles.letras}>Tipo de queja</p>
               <div style={styles.buttonGroup}>
                 <button
                   onClick={() => setTipoQueja("personal")}

@@ -88,6 +88,7 @@ const CerrarFactura = () => {
       display: 'block',
       marginBottom: '5px',
       fontWeight: 'bold',
+      color: "black",
     },
     inputContainerStyles: {
       marginBottom: '10px',
