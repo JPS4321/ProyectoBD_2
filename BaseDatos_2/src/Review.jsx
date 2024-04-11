@@ -8,6 +8,7 @@ const Review = () => {
   const [tieneQueja, setTieneQueja] = useState(false);
   const [motivoQueja, setMotivoQueja] = useState("");
   const [gravedadQueja, setGravedadQueja] = useState("3");
+  const [platoBebidaQueja, setPlatoBebidaQueja] = useState('');
   const [tipoQueja, setTipoQueja] = useState("");
   const [personalQueja, setPersonalQueja] = useState("");
   const [comidaQueja, setComidaQueja] = useState("");
