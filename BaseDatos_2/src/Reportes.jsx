@@ -52,11 +52,13 @@ const Reportes = () => {
       alignItems: "center",
       width: "100%",
       margin: "20px 0",
+      backgroundColor: "white",
+      color: "black",
     },
     title: {
       margin: "20px 0",
       fontSize: "2.5rem",
-      color: "#333",
+      color: "black",
     },
     instructionList: {
       listStyleType: "none",
@@ -65,6 +67,7 @@ const Reportes = () => {
     },
     instructionItem: {
       marginBottom: "10px",
+      color: "black",
     },
     button: {
       padding: "10px 20px",
@@ -80,11 +83,16 @@ const Reportes = () => {
       margin: '0.5rem',
       border: '1px solid #ccc',
       borderRadius: '5px',
+      color: "black",
     },
     label: {
       display: 'block',
       margin: '0.5rem 0',
+      color: "black",
     },
+    otrosTitulos: {
+      color: "black",
+    }
   };
 
   const dateRangeStyles = {
@@ -133,8 +141,8 @@ const Reportes = () => {
 
       {[1, 2, 4, 5].includes(selectedReport) && (
         <div style={dateRangeStyles}>
-          <h3>{`Fecha para reporte ${selectedReport}`}</h3>
-          <label>
+          <h3 style={styles.otrosTitulos}>{`Fecha para reporte ${selectedReport}`}</h3>
+          <label style={styles.label}>
             Fecha inicial:
             <input
               type="date"
@@ -143,7 +151,7 @@ const Reportes = () => {
               style={styles.input}
             />
           </label>
-          <label>
+          <label style={styles.label}>
             Fecha final: 
             <input
               type="date"
@@ -160,8 +168,8 @@ const Reportes = () => {
 
       {selectedReport === 3 && (
         <div style={dateRangeStyles}>
-          <h3>Reporte 3: Cantidad de personas</h3>
-          <label>
+          <h3 style={styles.otrosTitulos}>Reporte 3: Cantidad de personas</h3>
+          <label style={styles.label}>
             Cantidad de personas:
             <input
               type="number"

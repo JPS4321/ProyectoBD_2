@@ -147,7 +147,7 @@ const Review = () => {
     <div style={styles.container}>
       <div style={styles.formContainer}>
         <h2 style={styles.title}>Encuesta de Servicio</h2>
-        <label style={styles.label}>>
+        <label style={styles.label}>
           Califique la amabilidad del mesero entre 1 y 5
           <select
             style={styles.select}

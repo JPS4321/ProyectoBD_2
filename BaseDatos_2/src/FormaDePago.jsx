@@ -70,7 +70,7 @@ const FormaDePago = () => {
     <div style={styles.container}>
       <div style={styles.formContainer}>
         <h2 style={styles.title}>Forma de Pago</h2>
-        <div>
+        <div style={styles.label}> 
           Monto a Pagar: ${totalAPagar.toFixed(2)}
         </div>
         <label style={styles.label}>
