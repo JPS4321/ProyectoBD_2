@@ -40,6 +40,7 @@ const FormaDePago = () => {
       fontSize: '2rem',
       color: '#333',
       margin: '0 0 2rem 0',
+      color: "black",
     },
     input: {
       width: '100%', // Para que el input use todo el ancho posible
@@ -47,6 +48,8 @@ const FormaDePago = () => {
       margin: '0.5rem 0',
       border: '1px solid #ccc',
       borderRadius: '5px',
+      backgroundColor: "white",
+      color: "black",
     },
     button: {
       padding: '10px 20px',
@@ -58,16 +61,19 @@ const FormaDePago = () => {
       cursor: 'pointer',
       fontSize: '1rem',
     },
+    label: {
+      color: "black",
+    }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.formContainer}>
         <h2 style={styles.title}>Forma de Pago</h2>
-        <div>
+        <div style={styles.label}> 
           Monto a Pagar: ${totalAPagar.toFixed(2)}
         </div>
-        <label>
+        <label style={styles.label}>
           Pago en efectivo
           <input
             style={styles.input}
@@ -76,7 +82,7 @@ const FormaDePago = () => {
             onChange={(e) => setPagoEfectivo(e.target.value)}
           />
         </label>
-        <label>
+        <label style={styles.label}>
           Pago con tarjeta
           <input
             style={styles.input}
