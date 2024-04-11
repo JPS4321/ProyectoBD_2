@@ -7,7 +7,6 @@ const CerrarFactura = () => {
   const { pedido } = location.state || [];
   const [nombre, setNombre] = useState("");
   const [direccion, setDireccion] = useState("");
-
   const [nit, setNit] = useState("");
   const precioPorItem = 10; // Precio simulado por ítem
 
@@ -47,7 +46,9 @@ const CerrarFactura = () => {
       padding: "10px",
       border: "1px solid #ccc",
       borderRadius: "5px",
-      width: "300px", // Un ancho más adecuado para los campos de entrada
+      width: "300px",
+      backgroundColor: "white",
+      color: "black",
     },
     pedidoContainer: {
       marginTop: "20px",
@@ -62,6 +63,8 @@ const CerrarFactura = () => {
       margin: "10px 0",
       padding: "10px",
       borderBottom: "1px solid #ccc",
+      backgroundColor: 'white',
+      color: 'black', 
     },
     button: {
       padding: "10px 20px",
@@ -89,12 +92,15 @@ const CerrarFactura = () => {
     inputContainerStyles: {
       marginBottom: '10px',
     },
+    title: {
+      color: "black",
+    },
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.detalleUsuario}>
-        <h2>Cerrar Factura</h2>
+        <h2 style={styles.title}>Cerrar Factura</h2>
         <div style={styles.inputContainerStyles}>
           <label style={styles.labelStyles}>Nombre:</label> 
           <input
@@ -125,7 +131,7 @@ const CerrarFactura = () => {
       </div>
 
       <div style={styles.pedidoContainer}>
-        <h3>Resumen de Pedido</h3>
+        <h3 style={styles.title}>Resumen de Pedido</h3>
         {pedido.map((item, index) => (
           <div key={index} style={styles.item}>
             <span>
@@ -138,7 +144,7 @@ const CerrarFactura = () => {
             </span>
           </div>
         ))}
-        <h4>Total del Pedido: ${calcularTotalPedido().toFixed(2)}</h4>
+        <h4 style={styles.title}>Total del Pedido: ${calcularTotalPedido().toFixed(2)}</h4>
       </div>
       <button style={styles.button} onClick={procederAPagar}>
         Proceder a Pagar

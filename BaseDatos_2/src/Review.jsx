@@ -70,13 +70,16 @@ const Review = () => {
       fontSize: "2rem",
       color: "#333",
       marginBottom: "2rem",
+      color: "black",
     },
     select: {
       padding: "1rem",
       margin: "1rem 0",
       border: "1px solid #ccc",
       borderRadius: "5px",
-      width: "100%", // Para que el select use todo el ancho posible
+      width: "100%",
+      backgroundColor: "white",
+    color: "black",
     },
     button: {
       padding: "10px 20px",
@@ -109,17 +112,25 @@ const Review = () => {
     label: {
       margin: "10px 0",
     },
+    input: {
+      padding: "0.5rem",
+      margin: "0.5rem",
+      border: "1px solid #ccc",
+      borderRadius: "5px",
+      backgroundColor: "white", 
+      color: "black",
+    },
   };
 
   const buttonStyle = {
     padding: "10px 20px",
-    margin: "0 10px", // Agregar margen horizontal para separar los botones
+    margin: "0 10px",
     border: "none",
     borderRadius: "5px",
-    backgroundColor: "#f0f0f0", // Color por defecto de los botones
+    backgroundColor: "#f0f0f0",
     color: "#333",
     cursor: "pointer",
-    outline: "none", // Remover el borde que podría aparecer al hacer clic
+    outline: "none",
   };
 
   const activeButtonStyle = {

@@ -74,7 +74,9 @@ const TomarOrden = () => {
       padding: '10px',
       border: '1px solid #ccc',
       borderRadius: '5px',
-      width: '200px', // O el ancho que prefieras
+      width: '200px',
+      color: 'black',
+      backgroundColor: 'white',
     },
     button: {
       padding: '10px 20px',
@@ -93,12 +95,16 @@ const TomarOrden = () => {
       margin: '5px 0',
       padding: '5px',
       borderRadius: '5px',
+      color: 'black',
     },
+    title: {
+      color: 'black',
+    }
   };
 
   return (
     <div style={styles.container}>
-      <h2>Toma de Pedido</h2>
+      <h2 style={styles.title}>Toma de Pedido</h2>
       <div style={styles.formContainer}>
         <input
           style={styles.input}
@@ -125,7 +131,7 @@ const TomarOrden = () => {
 
       {pedido.length > 0 && (
         <div style={styles.pedidoContainer}>
-          <h3>Pedido Actual</h3>
+          <h3 style={styles.title}>Pedido Actual</h3>
           <ul>
             {pedido.map((item, index) => (
               <li key={index} style={styles.listItem}>

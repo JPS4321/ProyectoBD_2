@@ -7,6 +7,7 @@ const Reportes = () => {
   const [endDate, setEndDate] = useState("");
   const [selectedReport, setSelectedReport] = useState(null);
   const [numOfPeople, setNumOfPeople] = useState('')
+  const [showDateForReportSix, setShowDateForReportSix] = useState(false);
 
   const handleSelectReport = (reportNumber) => {
     setSelectedReport(reportNumber);
@@ -14,6 +15,7 @@ const Reportes = () => {
     setStartDate('');
     setEndDate('');
     setNumOfPeople('');
+    setShowDateForReportSix(reportNumber === 6);
   };
 
   const handleSearchReport = () => {
@@ -180,8 +182,14 @@ const Reportes = () => {
         </div>
       )}
 
-      {/* Bloque para seleccionar las fechas para ciertos reportes */}
-      {/* ... */}
+      {showDateForReportSix && (
+        <div style={dateRangeStyles}>
+          {/* Aquí puedes poner los campos de fecha para el reporte 6 */}
+          <button style={styles.button} onClick={handleSearchReport}>
+            Buscar Reporte
+          </button>
+        </div>
+      )}
 
     </div>
   );

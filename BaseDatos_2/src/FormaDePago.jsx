@@ -40,6 +40,7 @@ const FormaDePago = () => {
       fontSize: '2rem',
       color: '#333',
       margin: '0 0 2rem 0',
+      color: "black",
     },
     input: {
       width: '100%', // Para que el input use todo el ancho posible
@@ -47,6 +48,8 @@ const FormaDePago = () => {
       margin: '0.5rem 0',
       border: '1px solid #ccc',
       borderRadius: '5px',
+      backgroundColor: "white",
+      color: "black",
     },
     button: {
       padding: '10px 20px',

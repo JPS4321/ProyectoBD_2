@@ -32,6 +32,8 @@ const RevisarOrden = () => {
       margin: '10px 0',
       padding: '10px',
       borderBottom: '1px solid #ccc',
+      backgroundColor: 'white',
+      color: 'black', 
     },
     button: {
       padding: '10px 20px',
@@ -42,11 +44,15 @@ const RevisarOrden = () => {
       color: 'white',
       cursor: 'pointer',
     },
+    title: {
+      color: '#000', // Texto negro para el título
+      marginBottom: '1rem', // Espacio debajo del título
+    },
   };
 
   return (
     <div style={styles.container}>
-      <h2>Revisar Orden</h2>
+      <h2 style={styles.title}>Revisar Orden</h2>
       <div style={styles.pedidoContainer}>
         {pedido && pedido.map((item, index) => (
           <div key={index} style={styles.item}>
