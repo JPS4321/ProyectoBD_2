@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 const Opciones = () => {
   const navigate = useNavigate();
 
+  // Recuperar el usuario de localStorage
+  const user = JSON.parse(localStorage.getItem('user'));
+
   const handleIrASeleccionArea = () => {
     navigate('/seleccion-area');
   };
@@ -37,11 +40,18 @@ const Opciones = () => {
       backgroundColor: '#f0f0f0', // Color de fondo para los botones
       border: '1px solid #ccc', // Bordes sutiles
       width: '200px', // Ancho específico para los botones
-    }
+      color: '#333', // Color del texto en negro
+    },
+    userInfo: {
+      fontSize: '1rem', // Un tamaño más pequeño para el texto de la sesión
+      color: '#555', // Un color más suave para el texto
+      marginBottom: '20px', // Espacio antes del título principal
+    },
   };
 
   return (
     <div style={styles.container}>
+      {user && <div style={styles.userInfo}>Sesión Actual: {user.nombre}</div>}
       <h1 style={styles.title}>¿Qué quieres hacer?</h1>
       <button onClick={handleIrASeleccionArea} style={styles.button}>
         Asignar Área

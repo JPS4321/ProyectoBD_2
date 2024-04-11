@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import UserContext from './UserContext';
 
 const UserProvider = ({ children }) => {
@@ -11,8 +11,13 @@ const UserProvider = ({ children }) => {
     }
   }, []);
 
+  const updateUser = useCallback((newUser) => {
+    localStorage.setItem('user', JSON.stringify(newUser));
+    setUser(newUser);
+  }, []);
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, updateUser }}>
       {children}
     </UserContext.Provider>
   );
