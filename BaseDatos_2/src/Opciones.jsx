@@ -48,6 +48,7 @@ const Opciones = () => {
       marginBottom: '20px', // Espacio antes del título principal
     },
   };
+  console.log(user); // Suponiendo que 'nombre' es una de las propiedades del objeto usuario
 
   return (
     <div style={styles.container}>
