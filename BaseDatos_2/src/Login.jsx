@@ -15,7 +15,7 @@ const Login = () => {
       if (response.data) {
           localStorage.setItem('user', JSON.stringify(response.data.user));
         console.log('Usuario autenticado con éxito');
-        navigate('/seleccion-area');
+        navigate('/opciones');
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -25,6 +25,13 @@ const Login = () => {
       }
     }
   };
+
+  /* Navegación Kou
+  const handleSubmit = async (event) => {
+    console.log('Usuario autenticado con éxito');
+    navigate('/opciones');
+  };
+  */
 
   return (
     <div style={styles.container}>
