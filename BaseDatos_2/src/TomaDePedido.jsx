@@ -7,7 +7,7 @@ const TomaDePedido = () => {
   const [producto, setProducto] = useState('');
   const [cantidad, setCantidad] = useState(1);
   const [pedidosPorMesa, setPedidosPorMesa] = useState({});
-z
+
   // Agrega un nuevo producto al pedido de la mesa específica.
   const agregarAlPedido = () => {
     if (!mesa) {
