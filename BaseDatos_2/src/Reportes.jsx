@@ -52,7 +52,6 @@ const Reportes = () => {
       alignItems: "center",
       width: "100%",
       margin: "20px 0",
-      backgroundColor: "white",
       color: "black",
     },
     title: {
