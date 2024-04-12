@@ -1,16 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SeleccionMesaNoFumadores = () => {
   const navigate = useNavigate();
+  const [mesas, setMesas] = useState([]);
   const [selectedMesa, setSelectedMesa] = useState(null);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/mesas-disponibles/1?es_para_fumadores=false')
+      .then(response => response.json())
+      .then(data => setMesas(data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+
+  const getMesaStyle = (mesa) => ({
+    padding: '10px',
+    margin: '5px',
+    backgroundColor: mesa.estado_pedido === 'Abierto' ? 'red' : 'green',
+    color: 'white',
+    cursor: 'pointer',
+    fontSize: '1rem',
+  });
 
   const handleSeleccionMesa = (mesaId) => {
     setSelectedMesa(mesaId);
   };
 
   const handleAbrirFactura = () => {
-    // Aquí podrías enviar la información necesaria a tu backend y luego redirigir.
     console.log('Redirigiendo a Tomar Orden para la mesa:', selectedMesa);
     navigate('/tomar-orden', { state: { mesaId: selectedMesa, area: 'no fumadores' } });
   };
@@ -70,13 +86,13 @@ const SeleccionMesaNoFumadores = () => {
     <div style={styles.container}>
       <h1 style={styles.title}>Área No Fumadores - Selecciona tu Mesa</h1>
       <div style={styles.mesaContainer}>
-        {[1, 2, 3, 4, 5, 6].map((mesaId) => (
+        {mesas.map((mesa) => (
           <button
-            key={mesaId}
-            onClick={() => handleSeleccionMesa(mesaId)}
-            style={selectedMesa === mesaId ? { ...styles.button, ...styles.selectedButton } : styles.button}
+            key={mesa.pk_mesa}
+            onClick={() => handleSeleccionMesa(mesa.id_mesa)}
+            style={selectedMesa === mesa.id_mesa ? { ...getMesaStyle(mesa), ...styles.selectedButton } : getMesaStyle(mesa)}
           >
-            Mesa {mesaId}
+            Mesa {mesa.id_mesa} - Capacidad: {mesa.personas_mesa} personas
           </button>
         ))}
       </div>

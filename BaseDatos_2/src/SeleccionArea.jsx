@@ -3,25 +3,28 @@ import { useNavigate } from 'react-router-dom';
 
 const SeleccionArea = () => {
   const navigate = useNavigate();
-  const [area, setArea] = useState('');
+  const [area, setArea] = useState(''); // Almacena el nombre del área
+  const [areaId, setAreaId] = useState(null); // Almacena el ID del área
   const [isSmokingArea, setIsSmokingArea] = useState(null);
 
-  const areas = ['Patio', 'Salón 1', 'Salón 2', 'Pérgola'];
+  const areas = [
+    { nombre: 'Patio', id: 1 },
+    { nombre: 'Salón 1', id: 2 },
+    { nombre: 'Salón 2', id: 3 },
+    { nombre: 'Pérgola', id: 4 }
+  ];
 
   const handleAreaSelection = (areaSeleccionada) => {
-    setArea(areaSeleccionada);
-  };
-
-  const handleSmokingAreaSelection = (selection) => {
-    setIsSmokingArea(selection);
+    setArea(areaSeleccionada.nombre);
+    setAreaId(areaSeleccionada.id); // Guarda el ID del área seleccionada
   };
 
   const handleSubmit = () => {
-    if (area) {
+    if (area && areaId) {
       if (isSmokingArea !== null) {
-        // Decide a qué ruta dirigirse en base a si el usuario seleccionó fumadores o no fumadores
+        // Usar areaId aquí para hacer la petición a la API
         const ruta = isSmokingArea ? '/seleccion-mesa-fumadores' : '/seleccion-mesa-no-fumadores';
-        navigate(ruta, { state: { area } });
+        navigate(ruta, { state: { areaId, area, isSmokingArea } });
       } else {
         console.error('Por favor, indica si deseas estar en la zona de fumadores.');
       }
@@ -69,26 +72,26 @@ const SeleccionArea = () => {
     <div style={styles.container}>
       <h2 style={styles.title}>Selecciona el Área del Restaurante</h2>
       <div>
-        {areas.map((areaNombre) => (
+        {areas.map((areaObjeto) => (
           <button
-            key={areaNombre}
-            onClick={() => handleAreaSelection(areaNombre)}
-            style={area === areaNombre ? { ...styles.button, ...styles.selected } : styles.button}
+            key={areaObjeto.id}
+            onClick={() => handleAreaSelection(areaObjeto)}
+            style={area === areaObjeto.nombre ? { ...styles.button, ...styles.selected } : styles.button}
           >
-            {areaNombre}
+            {areaObjeto.nombre}
           </button>
         ))}
       </div>
       <h3 style={styles.question}>¿Quieres estar en el área de fumadores?</h3>
       <div>
         <button
-          onClick={() => handleSmokingAreaSelection(true)}
+          onClick={() => setIsSmokingArea(true)}
           style={isSmokingArea === true ? { ...styles.button, ...styles.selected } : styles.button}
         >
           Sí
         </button>
         <button
-          onClick={() => handleSmokingAreaSelection(false)}
+          onClick={() => setIsSmokingArea(false)}
           style={isSmokingArea === false ? { ...styles.button, ...styles.selected } : styles.button}
         >
           No

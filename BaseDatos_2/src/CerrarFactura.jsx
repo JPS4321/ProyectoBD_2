@@ -16,10 +16,36 @@ const CerrarFactura = () => {
   };
 
   const procederAPagar = () => {
-    // Pasar el total del pedido a la siguiente pantalla
-    const totalAPagar = calcularTotalPedido();
-    navigate("/pago", { state: { totalAPagar } });
+    // Asumiendo que tienes un endpoint que maneja la creación o actualización de la factura
+    fetch('http://localhost:3001/api/facturas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        cliente: {
+          nombre,
+          direccion,
+          nit,
+        },
+        detallesFactura: {
+          items: pedido, // Asegúrate de que el backend sepa cómo procesar esta estructura
+          total: calcularTotalPedido(),
+        }
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Asumiendo que el backend responde con la factura creada o actualizada
+      console.log('Factura creada:', data);
+      // Navegar a la pantalla de pago con los detalles necesarios
+      navigate("/pago", { state: { totalAPagar: calcularTotalPedido(), facturaId: data.factura.id } });
+    })
+    .catch(error => {
+      console.error('Error al crear la factura:', error);
+    });
   };
+  
 
   const calcularTotalPedido = () => {
     return pedido.reduce(
