@@ -24,7 +24,7 @@ const Login = () => {
         console.error('Error de autenticación', error);
       }
     }
-  }; 
+  };
 
   /* Navegación Kou
   const handleSubmit = async (event) => {
@@ -62,18 +62,18 @@ const Login = () => {
 // Estilos en línea para el componente
 const styles = {
     container: {
-        width: '100vw', // 100% del ancho de la ventana
-        height: '100vh', // 100% de la altura de la ventana
+        width: '100vw',
+        height: '100vh', 
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#ADD8E6', // O el código de color celeste que prefieras
-        color: '#ffffff', // Texto blanco para mayor contraste
+        backgroundColor: '#ADD8E6',
+        color: '#ffffff',
         textAlign: 'center',
-        boxSizing: 'border-box', // Asegúrate de que padding y border no afecten el ancho/altura
-        padding: '20px', // O el espaciado que prefieras
-        margin: '0', // Elimina cualquier margen
+        boxSizing: 'border-box',
+        padding: '20px',
+        margin: '0',
       },
     card: {
       width: '350px',
@@ -87,7 +87,7 @@ const styles = {
     },
     title: {
       marginBottom: '20px',
-      color: '#333',
+      color: 'black',
     },
     form: {
       width: '100%',
@@ -102,6 +102,8 @@ const styles = {
       borderRadius: '3px',
       border: '1px solid #ccc',
       fontSize: '16px',
+      backgroundColor: "white",
+      color: "black",
     },
     button: {
       width: '100%',
