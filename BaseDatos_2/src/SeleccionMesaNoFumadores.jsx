@@ -31,6 +31,13 @@ const SeleccionMesaNoFumadores = () => {
     navigate('/tomar-orden', { state: { mesaId: selectedMesa, area: 'no fumadores' } });
   };
 
+  // Función para manejar el cierre de factura
+  const handleCerrarFactura = () => {
+    // Aquí debes añadir cualquier lógica necesaria antes de redirigir
+    // Por ejemplo, podrías querer verificar si hay una mesa seleccionada y un pedido abierto
+    navigate('/pago', { state: { mesaId: selectedMesa } }); // Asegúrate de enviar el estado necesario
+  };
+
   const styles = {
     container: {
       width: '100vw',
@@ -82,6 +89,17 @@ const SeleccionMesaNoFumadores = () => {
     }
   };
 
+  const buttonStyle = {
+    padding: '10px 20px',
+    margin: '0 10px', // Esto añade un margen a ambos lados del botón
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    backgroundColor: '#f8f8f8',
+    color: '#333',
+    fontSize: '1rem',
+  };
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Área No Fumadores - Selecciona tu Mesa</h1>
@@ -96,13 +114,26 @@ const SeleccionMesaNoFumadores = () => {
           </button>
         ))}
       </div>
-      <button
-        onClick={handleAbrirFactura}
-        style={selectedMesa ? styles.facturaButton : { ...styles.facturaButton, ...styles.disabledButton }}
-        disabled={!selectedMesa}
-      >
-        Abrir Pedido
-      </button>
+
+      <div style={{ display: 'flex', flexDirection: '', justifyContent: 'center' }}> {/* Contenedor para los botones */}
+        <button
+          onClick={handleAbrirFactura}
+          style={selectedMesa ? { ...buttonStyle, ...styles.selectedButton } : buttonStyle}
+          disabled={!selectedMesa}
+        >
+          Abrir Pedido
+        </button>
+
+        {/* Botón para cerrar factura */}
+        <button
+          onClick={handleCerrarFactura}
+          style={selectedMesa ? { ...buttonStyle, ...styles.selectedButton } : buttonStyle}
+          disabled={!selectedMesa} // O elimina esta línea si el botón debe estar siempre habilitado
+        >
+          Cerrar Factura
+        </button>
+      </div>
+      
     </div>
   );
 };
