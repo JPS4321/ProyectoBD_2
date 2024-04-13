@@ -70,11 +70,12 @@ const Reportes = () => {
     },
     button: {
       padding: "10px 20px",
-      margin: "5px", // Un poco de espacio entre botones
+      margin: "5px", 
       fontSize: "1rem",
       cursor: "pointer",
       borderRadius: "5px",
-      backgroundColor: "#f0f0f0",
+      backgroundColor: "white",
+      color: "black",
       border: "1px solid #ccc",
     },
     input: {
@@ -82,6 +83,7 @@ const Reportes = () => {
       margin: '0.5rem',
       border: '1px solid #ccc',
       borderRadius: '5px',
+      backgroundColor: "white",
       color: "black",
     },
     label: {
@@ -180,10 +182,7 @@ const Reportes = () => {
           </label>
           {/* Incluir campos de fecha si es necesario para este reporte */}
           {/* ... */}
-          <button
-            style={styles.button}
-            onClick={handleSearchReport}
-          >
+          <button style={styles.button} onClick={handleSearchReport}>
             Buscar Reporte
           </button>
         </div>
