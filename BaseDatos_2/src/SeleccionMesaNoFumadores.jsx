@@ -101,7 +101,7 @@ const SeleccionMesaNoFumadores = () => {
         style={selectedMesa ? styles.facturaButton : { ...styles.facturaButton, ...styles.disabledButton }}
         disabled={!selectedMesa}
       >
-        Abrir Factura
+        Abrir Pedido
       </button>
     </div>
   );

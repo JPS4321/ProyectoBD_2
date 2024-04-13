@@ -7,7 +7,7 @@ const RevisarOrden = () => {
   const { pedido } = location.state; // Asegúrate de que 'pedido' está siendo pasado en el estado.
 
   const confirmarPedido = () => {
-    navigate('/cerrar-factura', { state: { pedido } });
+    navigate('/seleccion-area', { state: { pedido } });
   };
 
   // Aquí van tus estilos, pueden ser ajustados según tus necesidades.
