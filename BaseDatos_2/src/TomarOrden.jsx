@@ -7,12 +7,21 @@ const TomarOrden = () => {
   const [cantidad, setCantidad] = useState(1);
   const [pedido, setPedido] = useState([]);
 
+  // Simulamos la obtención de productos desde una base de datos
+  const productosDisponibles = [
+    { id: 1, nombre: 'Café' },
+    { id: 2, nombre: 'Té' },
+    { id: 3, nombre: 'Jugo de Naranja' },
+    // ... más productos
+  ];
+
   const agregarAlPedido = () => {
     if (!producto) {
       alert('Por favor, ingresa un producto.');
       return;
     }
 
+    const productoSeleccionado = productosDisponibles.find(p => p.id.toString() === producto);
     const nuevoItem = { producto, cantidad };
     setPedido([...pedido, nuevoItem]);
 
@@ -68,7 +77,6 @@ const TomarOrden = () => {
       backgroundColor: 'white',
       borderRadius: '5px',
       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      
     },
     input: {
       margin: '10px 0',
@@ -77,8 +85,6 @@ const TomarOrden = () => {
       
       borderRadius: '5px',
       width: '200px', // O el ancho que prefieras
-      
-      
     },
     button: {
       padding: '10px 20px',
@@ -88,7 +94,6 @@ const TomarOrden = () => {
       backgroundColor: '#4CAF50', // Verde para el botón
       color: 'white',
       cursor: 'pointer',
-      
     },
     pedidoContainer: {
       marginTop: '20px',
@@ -98,20 +103,30 @@ const TomarOrden = () => {
       margin: '5px 0',
       padding: '5px',
       borderRadius: '5px',
+      color: "black",
+      backgroundColor: "white"
     },
+    titulos: {
+      color: "black",
+    }
   };
 
   return (
     <div style={styles.container}>
-      <h2>Toma de Pedido</h2>
+      <h2 style={styles.titulos}>Toma de Pedido</h2>
       <div style={styles.formContainer}>
-        <input
+        <select
           style={styles.input}
-          type="text"
-          placeholder="Producto"
           value={producto}
           onChange={(e) => setProducto(e.target.value)}
-        />
+        >
+          <option value="">Selecciona un producto</option>
+          {productosDisponibles.map((prod) => (
+            <option key={prod.id} value={prod.id}>
+              {prod.nombre}
+            </option>
+          ))}
+        </select>
         <input
           style={styles.input}
           type="number"
@@ -130,7 +145,7 @@ const TomarOrden = () => {
 
       {pedido.length > 0 && (
         <div style={styles.pedidoContainer}>
-          <h3>Pedido Actual</h3>
+          <h3 style={styles.titulos}>Pedido Actual</h3>
           <ul>
             {pedido.map((item, index) => (
               <li key={index} style={styles.listItem}>
