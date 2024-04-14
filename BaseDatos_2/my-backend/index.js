@@ -1,8 +1,12 @@
 const express = require('express');
 const pool = require('./db');
 const cors = require('cors');
+<<<<<<< HEAD
 const fs = require('fs');
 
+=======
+const router = express.Router();
+>>>>>>> 92e9315c9e92b408d228db7e2dea1f0787a0913a
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -51,7 +55,8 @@ app.post('/api/guardar-seleccion', async (req, res) => {
   }
 });
 
-//ESTO ES DE TOMAR ORDEN
+
+//ESTO ES PARA TOMAR ORDEN
 router.get('/api/productos', async (req, res) => {
   try {
       const result = await pool.query('SELECT id_item, nombre FROM item');
@@ -166,6 +171,11 @@ app.post('/api/facturas', async (req, res) => {
       });
   }
 });
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 92e9315c9e92b408d228db7e2dea1f0787a0913a
 app.use(router);
 
 const PORT = process.env.PORT || 3001;
