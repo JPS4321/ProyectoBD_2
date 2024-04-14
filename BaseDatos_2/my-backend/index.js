@@ -1,26 +1,27 @@
 const express = require('express');
 const pool = require('./db');
 const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-
+// Crear el router
+const router = express.Router();
 
 app.get('/api/data', async (req, res) => {
   try {
-    const data = await pool.query('SELECT * FROM usuario');
-    res.json(data.rows);
+      const data = await pool.query('SELECT * FROM usuario');
+      res.json(data.rows);
   } catch (err) {
-    console.error(err.message);
+      console.error(err.message);
   }
 });
 
 
 //ESTO ES DEL SELECCIONAR AREA
 
-const fs = require('fs');
 
 app.get('/api/obtener-seleccion', (req, res) => {
   try {
@@ -63,6 +64,7 @@ router.get('/api/productos', async (req, res) => {
 
 
 
+
 //ESTO ES DEL LOGIN
 
 app.post('/api/login', async (req, res) => {
@@ -87,6 +89,8 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+app.use(router);
+
 
 // Endpoint para obtener mesas disponibles basadas en id_area y si es para fumadores
 app.get('/api/mesas-disponibles/:id_area', async (req, res) => {
@@ -162,11 +166,12 @@ app.post('/api/facturas', async (req, res) => {
       });
   }
 });
-
-
-
+app.use(router);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+

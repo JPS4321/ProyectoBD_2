@@ -4,13 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const RevisarOrden = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { pedido } = location.state; // Asegúrate de que 'pedido' está siendo pasado en el estado.
+  const { pedido } = location.state; 
 
   const confirmarPedido = () => {
     navigate('/seleccion-area', { state: { pedido } });
   };
 
-  // Aquí van tus estilos, pueden ser ajustados según tus necesidades.
   const styles = {
     container: {
       display: 'flex',
@@ -40,13 +39,13 @@ const RevisarOrden = () => {
       margin: '10px',
       border: 'none',
       borderRadius: '5px',
-      backgroundColor: '#4CAF50', // Verde para el botón
+      backgroundColor: '#4CAF50', 
       color: 'white',
       cursor: 'pointer',
     },
     title: {
-      color: '#000', // Texto negro para el título
-      marginBottom: '1rem', // Espacio debajo del título
+      color: '#000', 
+      marginBottom: '1rem', 
     },
   };
 

@@ -1,63 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const TomarOrden = () => {
   const navigate = useNavigate();
-  const [producto, setProducto] = useState('');
+  const [productoId, setProductoId] = useState('');
   const [cantidad, setCantidad] = useState(1);
   const [pedido, setPedido] = useState([]);
+  const [productosDisponibles, setProductosDisponibles] = useState([]);
 
-  // Simulamos la obtención de productos desde una base de datos
-  const productosDisponibles = [
-    { id: 1, nombre: 'Café' },
-    { id: 2, nombre: 'Té' },
-    { id: 3, nombre: 'Jugo de Naranja' },
-  ];
+  useEffect(() => {
+    fetch('http://localhost:3001/api/productos')
+      .then(response => response.json())
+      .then(setProductosDisponibles)
+      .catch(error => console.error('Error fetching products:', error));
+  }, []);
 
   const agregarAlPedido = () => {
+    const producto = productosDisponibles.find(p => p.id_item.toString() === productoId);
     if (!producto) {
-      alert('Por favor, ingresa un producto.');
+      alert('Por favor, selecciona un producto válido.');
       return;
     }
-
-    const productoSeleccionado = productosDisponibles.find(p => p.id.toString() === producto);
-    const nuevoItem = { producto, cantidad };
-    setPedido([...pedido, nuevoItem]);
-
-    setProducto('');
-    setCantidad(1);
+    const nuevoItem = {
+      id: producto.id_item,
+      producto: producto.nombre,
+      cantidad,
+    };
+    setPedido(pedidoActual => [...pedidoActual, nuevoItem]);
   };
-
-  /*
-  const enviarPedido = async () => {
-    if (pedido.length === 0) {
-      alert('No hay productos en el pedido para enviar.');
-      return;
-    }
-  
-    try {
-      const response = await axios.post('/api/pedidos', { pedido });
-      console.log(response.data);
-      navigate('/revisar-orden', { state: { pedido } });
-    } catch (error) {
-      console.error('Error al enviar el pedido:', error);
-    }
-  };
-  */
 
   const enviarPedido = () => {
     if (pedido.length === 0) {
       alert('No hay productos en el pedido para enviar.');
       return;
     }
-
-    // Simulamos una respuesta de un backend exitoso.
-    console.log('Pedido:', pedido);
-    // Imaginamos que la respuesta fue exitosa y navegamos a la siguiente página.
+    console.log('Pedido enviado:', pedido);
     navigate('/revisar-orden', { state: { pedido } });
   };
-
-  // Estilos en línea
+  
   const styles = {
     container: {
       display: 'flex',
@@ -66,7 +46,7 @@ const TomarOrden = () => {
       alignItems: 'center',
       width: '100vw',
       minHeight: '100vh',
-      backgroundColor: '#ADD8E6', // Color celeste para el fondo
+      backgroundColor: '#ADD8E6', 
     },
     formContainer: {
       display: 'flex',
@@ -83,14 +63,14 @@ const TomarOrden = () => {
       border: '1px solid #ccc',
       
       borderRadius: '5px',
-      width: '200px', // O el ancho que prefieras
+      width: '200px', 
     },
     button: {
       padding: '10px 20px',
       margin: '10px',
       border: 'none',
       borderRadius: '5px',
-      backgroundColor: '#4CAF50', // Verde para el botón
+      backgroundColor: '#4CAF50', 
       color: 'white',
       cursor: 'pointer',
     },
@@ -109,42 +89,34 @@ const TomarOrden = () => {
       color: "black",
     }
   };
-
   return (
     <div style={styles.container}>
-      <h2 style={styles.titulos}>Toma de Pedido</h2>
+      <h2>Toma de Pedido</h2>
       <div style={styles.formContainer}>
         <select
+          value={productoId}
+          onChange={(e) => setProductoId(e.target.value)}
           style={styles.input}
-          value={producto}
-          onChange={(e) => setProducto(e.target.value)}
         >
           <option value="">Selecciona un producto</option>
-          {productosDisponibles.map((prod) => (
-            <option key={prod.id} value={prod.id}>
-              {prod.nombre}
-            </option>
+          {productosDisponibles.map(({ id_item, nombre }) => (
+            <option key={id_item} value={id_item}>{nombre}</option>
           ))}
         </select>
         <input
-          style={styles.input}
           type="number"
           placeholder="Cantidad"
           value={cantidad}
           min="1"
-          onChange={(e) => setCantidad(parseInt(e.target.value))}
+          onChange={(e) => setCantidad(parseInt(e.target.value, 10))}
+          style={styles.input}
         />
-        <button style={styles.button} onClick={agregarAlPedido}>
-          Agregar al Pedido
-        </button>
-        <button style={styles.button} onClick={enviarPedido}>
-          Enviar Pedido
-        </button>
+        <button onClick={agregarAlPedido} style={styles.button}>Agregar al Pedido</button>
+        <button onClick={enviarPedido} style={styles.button}>Enviar Pedido</button>
       </div>
-
       {pedido.length > 0 && (
         <div style={styles.pedidoContainer}>
-          <h3 style={styles.titulos}>Pedido Actual</h3>
+          <h3>Pedido Actual</h3>
           <ul>
             {pedido.map((item, index) => (
               <li key={index} style={styles.listItem}>
