@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const CerrarFactura = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { pedido } = location.state || [];
+  const { pedido } = location.state || { pedido: [] };
   const [nombre, setNombre] = useState("");
   const [direccion, setDireccion] = useState("");
   const [nit, setNit] = useState("");
@@ -159,7 +159,7 @@ const CerrarFactura = () => {
 
       <div style={styles.pedidoContainer}>
         <h3 style={styles.title}>Resumen de Pedido</h3>
-        {pedido.map((item, index) => (
+        {Array.isArray(pedido) && pedido.map((item, index) => (
           <div key={index} style={styles.item}>
             <span>
               {item.producto} - Cantidad: {item.cantidad}
