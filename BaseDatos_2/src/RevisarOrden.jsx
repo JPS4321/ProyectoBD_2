@@ -7,6 +7,8 @@ const RevisarOrden = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { pedido } = location.state; // Asegúrate de que 'pedido' está siendo pasado en el estado.
 
+  console.log('Pedido recibido en RevisarOrden:', pedido);
+
   const confirmarPedido = async () => {
     const selectedMesa = localStorage.getItem('selectedMesa'); // ID de la mesa de localStorage
     const storedUser = localStorage.getItem('user'); // Información del usuario guardada en localStorage
@@ -32,6 +34,7 @@ const RevisarOrden = () => {
         subtotal: item.subtotal // Asume que el subtotal viene en el pedido
       })),
     };
+    console.log('Datos del pedido que se enviarán:', datosPedido);
 
     setIsSubmitting(true);
     try {
@@ -114,7 +117,7 @@ const RevisarOrden = () => {
         ))}
       </div>
       <button onClick={confirmarPedido} disabled={isSubmitting}>
-        {isSubmitting ? 'Confirmando...' : 'Confirmar'} // Cambia el texto del botón según 'isSubmitting'
+        {isSubmitting ? 'Confirmando...' : 'Confirmar'}
       </button>
     </div>
   );

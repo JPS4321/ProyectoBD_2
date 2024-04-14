@@ -16,21 +16,24 @@ const TomarOrden = () => {
       .catch(error => console.error('Error fetching products:', error));
   }, []);
 
+
   const agregarAlPedido = () => {
     const producto = productosDisponibles.find(p => p.id_item.toString() === productoId);
-    if (!producto) {
+    if (!producto ) {
       alert('Por favor, selecciona un producto válido.');
       return;
     }
     const nuevoItem = {
-      id: producto.id_item,
+      id_item: producto.id_item,
       producto: producto.nombre,
       cantidad,
       precio: producto.precio,
       subtotal: cantidad * producto.precio,
     };
+    console.log('Nuevo item que se agregará al pedido:', nuevoItem);
     setPedido(pedidoActual => [...pedidoActual, nuevoItem]);
   };
+  
 
   const enviarPedido = () => {
     if (pedido.length === 0) {

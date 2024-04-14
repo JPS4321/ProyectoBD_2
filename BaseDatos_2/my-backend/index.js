@@ -52,7 +52,7 @@ app.post('/api/guardar-seleccion', async (req, res) => {
 //ESTO ES DE TOMAR ORDEN
 router.get('/api/productos', async (req, res) => {
   try {
-      const result = await pool.query('SELECT id_item, nombre FROM item');
+      const result = await pool.query('SELECT id_item, nombre, precio FROM item');
       res.json(result.rows);
   } catch (error) {
       console.error('Error fetching products:', error);
