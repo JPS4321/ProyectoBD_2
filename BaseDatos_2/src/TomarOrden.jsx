@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 const TomarOrden = () => {
   const navigate = useNavigate();
   const [productoId, setProductoId] = useState('');
@@ -25,6 +26,8 @@ const TomarOrden = () => {
       id: producto.id_item,
       producto: producto.nombre,
       cantidad,
+      precio: producto.precio,
+      subtotal: cantidad * producto.precio,
     };
     setPedido(pedidoActual => [...pedidoActual, nuevoItem]);
   };
@@ -37,7 +40,7 @@ const TomarOrden = () => {
     console.log('Pedido enviado:', pedido);
     navigate('/revisar-orden', { state: { pedido } });
   };
-  
+  // Estilos en línea
   const styles = {
     container: {
       display: 'flex',
@@ -46,7 +49,7 @@ const TomarOrden = () => {
       alignItems: 'center',
       width: '100vw',
       minHeight: '100vh',
-      backgroundColor: '#ADD8E6', 
+      backgroundColor: '#ADD8E6', // Color celeste para el fondo
     },
     formContainer: {
       display: 'flex',
@@ -63,14 +66,14 @@ const TomarOrden = () => {
       border: '1px solid #ccc',
       
       borderRadius: '5px',
-      width: '200px', 
+      width: '200px', // O el ancho que prefieras
     },
     button: {
       padding: '10px 20px',
       margin: '10px',
       border: 'none',
       borderRadius: '5px',
-      backgroundColor: '#4CAF50', 
+      backgroundColor: '#4CAF50', // Verde para el botón
       color: 'white',
       cursor: 'pointer',
     },

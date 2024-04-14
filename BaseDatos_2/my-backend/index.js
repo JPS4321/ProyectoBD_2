@@ -21,8 +21,6 @@ app.get('/api/data', async (req, res) => {
 
 
 //ESTO ES DEL SELECCIONAR AREA
-
-
 app.get('/api/obtener-seleccion', (req, res) => {
   try {
     if (fs.existsSync('seleccionArea.json')) {
@@ -166,6 +164,44 @@ app.post('/api/facturas', async (req, res) => {
       });
   }
 });
+
+//COnfimar orden Endpoint
+
+app.post('/api/crear-pedido', async (req, res) => {
+  const { id_mesa, id_usuario, detalles } = req.body;
+  const fecha_pedido = new Date().toISOString().slice(0, 10);
+  const hora_inicio = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+  try {
+    await pool.query('BEGIN'); // Iniciar transacción
+
+    // Insertar en la tabla 'pedido'
+    const insertPedidoText = `
+      INSERT INTO pedido (id_mesa, id_usuario, fecha_de_pedido, hora_inicio, estado_pedido)
+      VALUES ($1, $2, $3, $4, 'Abierto') RETURNING id_pedido;
+    `;
+    const pedidoResult = await pool.query(insertPedidoText, [id_mesa, id_usuario, fecha_pedido, hora_inicio]);
+    const pedidoId = pedidoResult.rows[0].id_pedido;
+
+    // Insertar detalles del pedido en la tabla 'detallepedido'
+    const insertDetallePedidoText = `
+      INSERT INTO detallepedido (id_pedido, id_item, cantidad, subtotal)
+      VALUES ($1, $2, $3, $4);
+    `;
+    for (const item of detalles) {
+      await pool.query(insertDetallePedidoText, [pedidoId, item.id_item, item.cantidad, item.subtotal]);
+    }
+
+    await pool.query('COMMIT'); // Finalizar transacción
+    res.status(201).json({ message: "Pedido creado exitosamente.", id_pedido: pedidoId });
+  } catch (err) {
+    await pool.query('ROLLBACK'); // Deshacer cambios si algo falla
+    console.error('Error al crear pedido:', err);
+    res.status(500).json({ message: "Error al procesar el pedido." });
+  }
+});
+
+
 app.use(router);
 
 const PORT = process.env.PORT || 3001;
