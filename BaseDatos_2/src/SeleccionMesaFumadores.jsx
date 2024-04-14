@@ -1,47 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 
 const SeleccionMesaFumadores = () => {
   const navigate = useNavigate();
   const [mesas, setMesas] = useState([]);
   const [selectedMesa, setSelectedMesa] = useState(null);
 
-  // Cargar las mesas disponibles para fumadores al montar el componente
+  // Función para cargar las mesas según área y zona de fumadores
+  const cargarMesas = async (areaId, isSmokingArea) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/mesas-disponibles/${areaId}?es_para_fumadores=${isSmokingArea}`);
+      const data = await response.json();
+      setMesas(data);
+      console.log("Datos devueltos por la API:", data); 
+    } catch (error) {
+      console.error('Error fetching mesas:', error);
+    }
+  };
+
+  // Obtener la selección guardada y cargar mesas
+  const obtenerSeleccionGuardada = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/obtener-seleccion');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Selección actual:', data);
+        cargarMesas(data.areaId, data.isSmokingArea);
+      } else {
+        alert('No hay selección guardada.');
+      }
+    } catch (error) {
+      console.error('Error al obtener la selección:', error);
+      alert('Error al obtener la selección guardada.');
+    }
+  };
+
   useEffect(() => {
-    // Asegúrate de que la URL sea correcta según la configuración de tu servidor y la base de datos
-    fetch('http://localhost:3001/api/mesas-disponibles/1?es_para_fumadores=true')
-      .then(response => response.json())
-      .then(data => setMesas(data))
-      .catch(error => console.error('Error fetching data:', error));
+    obtenerSeleccionGuardada();
   }, []);
 
-  // Función para determinar el estilo de la mesa basado en el estado del pedido
-  const getMesaStyle = (mesa) => ({
-    padding: '10px',
-    margin: '5px',
-    backgroundColor: mesa.estado_pedido === 'Abierto' ? 'red' : 'green',
-    color: 'white',
-    cursor: 'pointer',
-    fontSize: '1rem',
-  });
-
-  // Manejador para seleccionar una mesa
   const handleSeleccionMesa = (mesaId) => {
     setSelectedMesa(mesaId);
   };
 
-  // Manejador para abrir factura
+  const getButtonStyle = (mesa) => {
+    const baseStyle = {
+      padding: '10px 20px',
+      margin: '5px',
+      border: '1px solid #ddd',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontSize: '1rem',
+      color: 'white', 
+    };
+  
+    if (mesa.estado_pedido === 'Abierto') {
+      return {
+        ...baseStyle,
+        backgroundColor: 'red',
+      };
+    } else {
+      return {
+        ...baseStyle,
+        backgroundColor: 'green',
+      };
+    }
+  };
+  
+
+  // Manjear apertura y cierre de factura
   const handleAbrirFactura = () => {
+    localStorage.setItem('selectedMesa', selectedMesa);
     console.log('Redirigiendo a Tomar Orden para la mesa:', selectedMesa);
     navigate('/tomar-orden', { state: { mesaId: selectedMesa, area: 'fumadores' } });
   };
 
-  // Función para manejar el cierre de factura
   const handleCerrarFactura = () => {
-    // Aquí debes añadir cualquier lógica necesaria antes de redirigir
-    // Por ejemplo, podrías querer verificar si hay una mesa seleccionada y un pedido abierto
-    navigate('/pago', { state: { mesaId: selectedMesa } }); // Asegúrate de enviar el estado necesario
+    localStorage.setItem('selectedMesa', selectedMesa);
+    console.log('Redirigiendo al pago para la mesa:', selectedMesa);
+    navigate('/pago', { state: { mesaId: selectedMesa } });
   };
+
+  
 
   // Estilos para diferentes componentes del UI
   const styles = {
@@ -72,22 +112,13 @@ const SeleccionMesaFumadores = () => {
       color: '#333',
       fontSize: '1rem',
     },
-    selectedButton: {
+    openMesaButton: {
+      backgroundColor: 'red',
+      color: 'white',
+    },
+    selectedMesaButton: {
       backgroundColor: '#4CAF50',
       color: 'white',
-    },
-    facturaButton: {
-      padding: '10px 20px',
-      marginTop: '20px',
-      backgroundColor: '#5cb85c',
-      color: 'white',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    },
-    disabledButton: {
-      backgroundColor: '#ccc',
-      cursor: 'not-allowed',
     },
     title: {
       color: '#333',
@@ -95,51 +126,38 @@ const SeleccionMesaFumadores = () => {
     }
   };
 
-  const buttonStyle = {
-    padding: '10px 20px',
-    margin: '0 10px', // Esto añade un margen a ambos lados del botón
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    backgroundColor: '#f8f8f8',
-    color: '#333',
-    fontSize: '1rem',
-  };
-
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Área Fumadores - Selecciona tu Mesa</h1>
+    
+
       <div style={styles.mesaContainer}>
         {mesas.map((mesa) => (
           <button
             key={mesa.pk_mesa}
-            onClick={() => handleSeleccionMesa(mesa.id_mesa)}
-            style={selectedMesa === mesa.id_mesa ? { ...styles.button, ...styles.selectedButton } : styles.button}
+            onClick={() => handleSeleccionMesa(mesa.pk_mesa)}
+            style={getButtonStyle(mesa)}
           >
             Mesa {mesa.id_mesa} - Capacidad: {mesa.personas_mesa} personas
           </button>
         ))}
       </div>
       
-      <div style={{ display: 'flex', flexDirection: '', justifyContent: 'center' }}> {/* Contenedor para los botones */}
-        <button
-          onClick={handleAbrirFactura}
-          style={selectedMesa ? { ...buttonStyle, ...styles.selectedButton } : buttonStyle}
-          disabled={!selectedMesa}
-        >
-          Abrir Pedido
-        </button>
+      <button
+        onClick={handleAbrirFactura}
+        style={selectedMesa ? { ...styles.button, ...styles.selectedMesaButton } : styles.button}
+        disabled={!selectedMesa}
+      >
+        Abrir Pedido
+      </button>
 
-        {/* Botón para cerrar factura */}
-        <button
-          onClick={handleCerrarFactura}
-          style={selectedMesa ? { ...buttonStyle, ...styles.selectedButton } : buttonStyle}
-          disabled={!selectedMesa} // O elimina esta línea si el botón debe estar siempre habilitado
-        >
-          Cerrar Factura
-        </button>
-      </div>
-
+      <button
+        onClick={handleCerrarFactura}
+        style={selectedMesa ? { ...styles.button, ...styles.selectedMesaButton } : styles.button}
+        disabled={!selectedMesa}
+      >
+        Cerrar Factura
+      </button>
     </div>
   );
 };

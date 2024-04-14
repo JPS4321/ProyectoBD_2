@@ -12,7 +12,6 @@ const TomarOrden = () => {
     { id: 1, nombre: 'Café' },
     { id: 2, nombre: 'Té' },
     { id: 3, nombre: 'Jugo de Naranja' },
-    // ... más productos
   ];
 
   const agregarAlPedido = () => {

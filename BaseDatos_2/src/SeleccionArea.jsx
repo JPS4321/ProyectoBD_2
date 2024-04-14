@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; 
+
 
 const SeleccionArea = () => {
   const navigate = useNavigate();
@@ -18,20 +19,45 @@ const SeleccionArea = () => {
     setArea(areaSeleccionada.nombre);
     setAreaId(areaSeleccionada.id); // Guarda el ID del área seleccionada
   };
+  const handleSmokingSelection = (smoking) => {
+    setIsSmokingArea(smoking);
+  };
 
-  const handleSubmit = () => {
-    if (area && areaId) {
-      if (isSmokingArea !== null) {
-        // Usar areaId aquí para hacer la petición a la API
-        const ruta = isSmokingArea ? '/seleccion-mesa-fumadores' : '/seleccion-mesa-no-fumadores';
-        navigate(ruta, { state: { areaId, area, isSmokingArea } });
-      } else {
-        console.error('Por favor, indica si deseas estar en la zona de fumadores.');
+  
+
+  const fetchMesasDisponibles = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/mesas-disponibles/${areaId}?es_para_fumadores=${isSmokingArea}`);
+      if (!response.ok) {
+        throw new Error('Respuesta del servidor no fue OK.');
       }
-    } else {
-      console.error('Por favor, selecciona un área.');
+      const mesasDisponibles = await response.json();
+
+      const ruta = isSmokingArea ? '/seleccion-mesa-fumadores' : '/seleccion-mesa-no-fumadores';
+      navigate(ruta, { state: { mesas: mesasDisponibles, areaId, isSmokingArea } });
+    } catch (error) {
+      console.error('Error al obtener las mesas disponibles:', error);
     }
   };
+
+
+  const handleSubmit = () => {
+    if (areaId != null && isSmokingArea != null) {
+      fetchMesasDisponibles();
+      fetch('http://localhost:3001/api/guardar-seleccion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ areaId, isSmokingArea }),
+      });
+    } else {
+      alert('Por favor, selecciona un área y si deseas estar en la zona de fumadores.');
+    }
+  };
+  
+  
+  
 
   // Estilos en línea centrados y con la paleta de colores elegida
   const styles = {
@@ -76,7 +102,7 @@ const SeleccionArea = () => {
           <button
             key={areaObjeto.id}
             onClick={() => handleAreaSelection(areaObjeto)}
-            style={area === areaObjeto.nombre ? { ...styles.button, ...styles.selected } : styles.button}
+            style={areaId === areaObjeto.id ? { ...styles.button, ...styles.selected } : styles.button}
           >
             {areaObjeto.nombre}
           </button>
@@ -85,13 +111,13 @@ const SeleccionArea = () => {
       <h3 style={styles.question}>¿Quieres estar en el área de fumadores?</h3>
       <div>
         <button
-          onClick={() => setIsSmokingArea(true)}
+          onClick={() => handleSmokingSelection(true)}
           style={isSmokingArea === true ? { ...styles.button, ...styles.selected } : styles.button}
         >
           Sí
         </button>
         <button
-          onClick={() => setIsSmokingArea(false)}
+          onClick={() => handleSmokingSelection(false)}
           style={isSmokingArea === false ? { ...styles.button, ...styles.selected } : styles.button}
         >
           No
@@ -99,8 +125,8 @@ const SeleccionArea = () => {
       </div>
       <button
         onClick={handleSubmit}
-        style={area !== '' && isSmokingArea !== null ? { ...styles.button, ...styles.selected } : { ...styles.button, backgroundColor: '#ccc' }}
-        disabled={area === '' || isSmokingArea === null}
+        style={areaId !== null && isSmokingArea !== null ? { ...styles.button, ...styles.selected } : { ...styles.button, backgroundColor: '#ccc' }}
+        disabled={areaId === null || isSmokingArea === null}
       >
         Continuar
       </button>

@@ -6,6 +6,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+
 app.get('/api/data', async (req, res) => {
   try {
     const data = await pool.query('SELECT * FROM usuario');
@@ -14,6 +16,54 @@ app.get('/api/data', async (req, res) => {
     console.error(err.message);
   }
 });
+
+
+//ESTO ES DEL SELECCIONAR AREA
+
+const fs = require('fs');
+
+app.get('/api/obtener-seleccion', (req, res) => {
+  try {
+    if (fs.existsSync('seleccionArea.json')) {
+      const seleccion = fs.readFileSync('seleccionArea.json', 'utf8');
+      res.status(200).json(JSON.parse(seleccion));
+    } else {
+      res.status(404).json({ message: 'No hay selección guardada' });
+    }
+  } catch (error) {
+    console.error('Error al leer el archivo de selección:', error);
+    res.status(500).json({ error: 'Error al procesar la solicitud' });
+  }
+});
+
+
+app.post('/api/guardar-seleccion', async (req, res) => {
+  const { areaId, isSmokingArea } = req.body;
+  try {
+    const fs = require('fs');
+    fs.writeFileSync('seleccionArea.json', JSON.stringify({ areaId, isSmokingArea }));
+
+    res.status(200).json({ message: 'Selección guardada correctamente' });
+  } catch (error) {
+    console.error('Error al guardar la selección:', error);
+    res.status(500).json({ error: 'Error al procesar la solicitud' });
+  }
+});
+
+//ESTO ES DE TOMAR ORDEN
+router.get('/api/productos', async (req, res) => {
+  try {
+      const result = await pool.query('SELECT id_item, nombre FROM item');
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching products:', error);
+      res.status(500).send('Server error');
+  }
+});
+
+
+
+//ESTO ES DEL LOGIN
 
 app.post('/api/login', async (req, res) => {
   try {

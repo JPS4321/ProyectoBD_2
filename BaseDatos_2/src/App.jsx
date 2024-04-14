@@ -27,7 +27,6 @@ const App = () => {
         <Route path="/review" element={<Review />} />
         <Route path="/opciones" element={<Opciones />} />
         <Route path="/reportes" element={<Reportes />} />
-        {/* Agregar más rutas según sea necesario */}
       </Routes>
     </Router>
   );
