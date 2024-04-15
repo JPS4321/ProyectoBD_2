@@ -8,6 +8,10 @@ const TomarOrden = () => {
   const [cantidad, setCantidad] = useState(1);
   const [pedido, setPedido] = useState([]);
   const [productosDisponibles, setProductosDisponibles] = useState([]);
+  const [descripcionSeleccionada, setDescripcionSeleccionada] = useState('');
+
+
+
 
   useEffect(() => {
     fetch('http://localhost:3001/api/productos')
@@ -34,6 +38,16 @@ const TomarOrden = () => {
     setPedido(pedidoActual => [...pedidoActual, nuevoItem]);
   };
   
+const handleSelectChange = (e) => {
+  const id = e.target.value;
+  setProductoId(id);
+  
+  // Encuentra la descripción del producto seleccionado
+  const producto = productosDisponibles.find(p => p.id_item.toString() === id);
+  setDescripcionSeleccionada(producto ? producto.descripcion : '');
+};
+
+
 
   const enviarPedido = () => {
     if (pedido.length === 0) {
@@ -100,7 +114,7 @@ const TomarOrden = () => {
       <div style={styles.formContainer}>
         <select
           value={productoId}
-          onChange={(e) => setProductoId(e.target.value)}
+          onChange={handleSelectChange}
           style={styles.input}
         >
           <option value="">Selecciona un producto</option>
@@ -116,6 +130,12 @@ const TomarOrden = () => {
           onChange={(e) => setCantidad(parseInt(e.target.value, 10))}
           style={styles.input}
         />
+         {productoId && ( // Aquí usamos productoId para verificar si algo está seleccionado
+      <>
+        <h2 style={{ color: 'black' }}>Descripción</h2>
+        <p style={{ color: 'black' }}>{descripcionSeleccionada}</p>
+      </>
+    )}
         <button onClick={agregarAlPedido} style={styles.button}>Agregar al Pedido</button>
         <button onClick={enviarPedido} style={styles.button}>Enviar Pedido</button>
       </div>
