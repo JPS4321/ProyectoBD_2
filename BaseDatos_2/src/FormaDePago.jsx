@@ -1,21 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const FormaDePago = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { totalAPagar } = location.state || { totalAPagar: 0 };
-
+  const [totalAPagar, setTotalAPagar] = useState(0);
   const [pagoEfectivo, setPagoEfectivo] = useState('');
   const [pagoTarjeta, setPagoTarjeta] = useState('');
+  const [metodoPago, setMetodoPago] = useState('Efectivo'); // Estado para manejar el método de pago seleccionado
+  const [cantidadAPagar, setCantidadAPagar] = useState('');
 
-  // Aquí procesarías el pago en tu aplicación
-  const procesarPago = () => {
-    // Ejemplo: navegar a la próxima página o mostrar un mensaje de éxito
-    navigate('/review');
+  useEffect(() => {
+    const fetchTotalAPagar = async () => {
+      const id_facturaActual = localStorage.getItem('Id_facturaActual');
+      if (id_facturaActual) {
+        try {
+          const response = await fetch(`http://localhost:3001/api/factura-total/${id_facturaActual}`);
+          const data = await response.json();
+          if (response.ok) {
+            setTotalAPagar(data.totalAPagar);
+            setCantidadAPagar(data.totalAPagar); // Inicializar cantidad a pagar con el total
+          } else {
+            throw new Error(data.message || 'No se pudo obtener el total de la factura');
+          }
+        } catch (error) {
+          console.error('Error al obtener el total de la factura:', error);
+        }
+      }
+    };
+
+    fetchTotalAPagar();
+  }, []);
+
+  const procesarPago = async () => {
+    const montoAPagar = Number(cantidadAPagar);
+    if (montoAPagar > totalAPagar) {
+      alert('La cantidad a pagar no puede ser mayor que el total a pagar.');
+      return;
+    }
+
+    if (totalAPagar > 0 && montoAPagar <= totalAPagar) {
+      try {
+        const id_factura = localStorage.getItem('Id_facturaActual');
+        const response = await fetch('http://localhost:3001/api/pagos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id_factura,
+            monto: montoAPagar,
+            forma_pago: metodoPago,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setTotalAPagar(prevTotal => prevTotal - montoAPagar);
+          setCantidadAPagar('');
+          if (totalAPagar - montoAPagar === 0) {
+            navigate('/pago-confirmado');
+          }
+        } else {
+          throw new Error(data.message || 'Error al procesar el pago');
+        }
+      } catch (error) {
+        console.error('Error al procesar el pago:', error);
+      }
+    } else {
+      alert('El monto a pagar debe ser igual al total a pagar para proceder.');
+    }
   };
 
-  // Estilos en línea
+  
   const styles = {
     container: {
       display: 'flex',
@@ -66,6 +122,7 @@ const FormaDePago = () => {
     }
   };
 
+
   return (
     <div style={styles.container}>
       <div style={styles.formContainer}>
@@ -74,7 +131,7 @@ const FormaDePago = () => {
           Monto a Pagar: ${totalAPagar.toFixed(2)}
         </div>
         <label style={styles.label}>
-          Pago en efectivo
+          Cantidad a Pagar
           <input
             style={styles.input}
             type="number"
@@ -82,15 +139,20 @@ const FormaDePago = () => {
             onChange={(e) => setPagoEfectivo(e.target.value)}
           />
         </label>
-        <label style={styles.label}>
-          Pago con tarjeta
-          <input
+        <div style={styles.label}>
+          Método de Pago:
+          <select
+            value={metodoPago}
+            onChange={(e) => setMetodoPago(e.target.value)}
             style={styles.input}
-            type="number"
-            value={pagoTarjeta}
-            onChange={(e) => setPagoTarjeta(e.target.value)}
-          />
-        </label>
+          >
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta">Tarjeta</option>
+          </select>
+        </div>
+
+        
+        
         <button style={styles.button} onClick={procesarPago}>
           Pagar
         </button>

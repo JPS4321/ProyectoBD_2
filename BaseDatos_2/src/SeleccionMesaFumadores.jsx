@@ -78,7 +78,7 @@ const SeleccionMesaFumadores = () => {
   const handleCerrarFactura = () => {
     localStorage.setItem('selectedMesa', selectedMesa);
     console.log('Redirigiendo al pago para la mesa:', selectedMesa);
-    navigate('/pago', { state: { mesaId: selectedMesa } });
+    navigate('/cerrar-factura', { state: { mesaId: selectedMesa } });
   };
 
   

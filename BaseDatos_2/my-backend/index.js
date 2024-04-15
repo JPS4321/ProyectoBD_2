@@ -20,7 +20,73 @@ app.get('/api/data', async (req, res) => {
 });
 
 
+//ESTO ES DE CERRAR FACTURA
+
+app.get('/api/pedidos-abiertos/:id_mesa', async (req, res) => {
+  try {
+    const { id_mesa } = req.params;
+
+    const queryText = `
+      SELECT id_pedido
+      FROM pedido
+      WHERE id_mesa = $1 AND estado_pedido = 'Abierto';
+    `;
+    const pedidosAbiertos = await pool.query(queryText, [id_mesa]);
+
+    if (pedidosAbiertos.rowCount === 0) {
+      return res.status(404).json({ message: "No hay pedidos abiertos para la mesa proporcionada." });
+    }
+
+    res.json(pedidosAbiertos.rows);
+  } catch (error) {
+    console.error('Error al obtener los pedidos abiertos:', error);
+    res.status(500).json({ message: "Error al procesar la solicitud." });
+  }
+});
+
+
+app.get('/api/detalles-pedido/:id_pedido', async (req, res) => {
+  try {
+    // Obtener el id_pedido de los parámetros de la ruta
+    const { id_pedido } = req.params;
+
+    // Realizar la consulta SQL para obtener todos los detalles de pedido con ese id_pedido
+    const queryText = 'SELECT * FROM detallepedido WHERE id_pedido = $1';
+    const detallesPedido = await pool.query(queryText, [id_pedido]);
+
+    // Enviar los detalles del pedido al cliente
+    res.json(detallesPedido.rows);
+  } catch (error) {
+    console.error('Error al obtener los detalles del pedido:', error);
+    res.status(500).json({ message: "Error al procesar la solicitud." });
+  }
+});
+
+// Este endpoint devuelve detalles de un ítem específico por id_item
+app.get('/api/items/:id_item', async (req, res) => {
+  try {
+    const { id_item } = req.params;
+    const query = 'SELECT nombre, precio FROM item WHERE id_item = $1';
+    const { rows } = await pool.query(query, [id_item]);
+
+
+    if (rows.length === 0) {
+      return res.status(404).send('Ítem no encontrado');
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error en el endpoint /api/items/:id_item:', error);
+    res.status(500).send('Error al procesar la solicitud');
+  }
+});
+
+
+
+
+
 //ESTO ES DEL SELECCIONAR AREA
+
 app.get('/api/obtener-seleccion', (req, res) => {
   try {
     if (fs.existsSync('seleccionArea.json')) {
@@ -119,51 +185,135 @@ app.get('/api/mesas-disponibles/:id_area', async (req, res) => {
   }
 });
 
+//PAGAR
 
-app.post('/api/facturas', async (req, res) => {
-  const { cliente, detallesFactura } = req.body;
-
+app.get('/api/factura-total/:id_factura', async (req, res) => {
+  const { id_factura } = req.params;
   try {
-      // Buscar si el cliente ya existe en la base de datos
-      let clienteResult = await pool.query('SELECT id_cliente FROM cliente WHERE nit = $1', [cliente.nit]);
-
-      let clienteId;
-      if (clienteResult.rows.length > 0) {
-          // Cliente existe, obtener el id existente
-          clienteId = clienteResult.rows[0].id_cliente;
-      } else {
-          // Cliente no existe, insertar nuevo cliente
-          clienteResult = await pool.query(
-              'INSERT INTO cliente (nombre, nit, direccion) VALUES ($1, $2, $3) RETURNING id_cliente',
-              [cliente.nombre, cliente.nit, cliente.direccion]
-          );
-          clienteId = clienteResult.rows[0].id_cliente;
-      }
-
-      // Crear una nueva factura asociada al cliente
-      const facturaResult = await pool.query(
-          'INSERT INTO factura (id_cliente, total_sin_propina, fecha_hora_emision) VALUES ($1, $2, NOW()) RETURNING *',
-          [clienteId, detallesFactura.total]
-      );
-
-      res.json({
-          success: true,
-          message: 'Factura creada con éxito',
-          factura: facturaResult.rows[0],
-          cliente: {
-              id_cliente: clienteId,
-              ...cliente
-          }
-      });
+    const result = await pool.query('SELECT total_con_propina FROM factura WHERE id_factura = $1', [id_factura]);
+    if (result.rows.length > 0) {
+      res.json({ totalAPagar: result.rows[0].total_con_propina });
+    } else {
+      res.status(404).json({ message: 'Factura no encontrada' });
+    }
   } catch (error) {
-      console.error('Error al crear la factura:', error);
-      res.status(500).json({
-          success: false,
-          message: 'Error al procesar la solicitud',
-          error: error.message
-      });
+    console.error('Error al obtener el total de la factura:', error);
+    res.status(500).json({ message: 'Error al procesar la solicitud' });
   }
 });
+
+
+// ESTO ES DE PAGOS
+
+
+app.post('/api/pagos', async (req, res) => {
+  const { id_factura, monto, forma_pago } = req.body;
+
+  try {
+    // Inicia una transacción
+    await pool.query('BEGIN');
+
+    // Inserta el pago en la base de datos
+    const queryText = `
+      INSERT INTO pago (id_factura, monto, forma_pago)
+      VALUES ($1, $2, $3) RETURNING *;
+    `;
+    const pagoResult = await pool.query(queryText, [id_factura, monto, forma_pago]);
+    const pagoData = pagoResult.rows[0];
+
+    // Actualiza la factura con el nuevo monto total a pagar
+    const updateFacturaText = `
+      UPDATE factura
+      SET total_con_propina = total_con_propina - $1
+      WHERE id_factura = $2 RETURNING total_con_propina;
+    `;
+    const facturaResult = await pool.query(updateFacturaText, [monto, id_factura]);
+
+    // Obtiene el nuevo total a pagar actualizado
+    const nuevoTotalAPagar = facturaResult.rows[0].total_con_propina;
+
+    // Si el nuevo total a pagar es 0, cambia el estado de la factura o realiza las acciones necesarias
+    if (nuevoTotalAPagar === 0) {
+      // Por ejemplo, actualizar el estado de la factura a 'Pagada'
+      // const facturaPagadaResult = await pool.query(...);
+    }
+
+    // Finaliza la transacción
+    await pool.query('COMMIT');
+
+    res.json({
+      success: true,
+      message: 'Pago realizado con éxito',
+      pago: pagoData,
+      nuevoTotalAPagar
+    });
+
+  } catch (error) {
+    // Deshacer cambios si algo falla
+    await pool.query('ROLLBACK');
+    console.error('Error al realizar el pago:', error);
+    res.status(500).json({ error: 'Error al procesar la solicitud' });
+  }
+});
+
+
+//FACTURAS
+app.post('/api/facturas', async (req, res) => {
+  const { id_pedido, total_sin_propina, total_con_propina, cliente } = req.body;
+
+  try {
+    // Iniciar transacción para manejar las operaciones de la factura y del cliente
+    await pool.query('BEGIN');
+
+    // Buscar si el cliente ya existe en la base de datos
+    let clienteResult = await pool.query('SELECT id_cliente FROM cliente WHERE nit = $1', [cliente.nit]);
+    let clienteId;
+
+    if (clienteResult.rows.length > 0) {
+        // Cliente existe, obtener el id existente
+        clienteId = clienteResult.rows[0].id_cliente;
+    } else {
+        // Cliente no existe, insertar nuevo cliente y obtener el id
+        clienteResult = await pool.query(
+            'INSERT INTO cliente (nombre, nit, direccion) VALUES ($1, $2, $3) RETURNING id_cliente',
+            [cliente.nombre, cliente.nit, cliente.direccion]
+        );
+        clienteId = clienteResult.rows[0].id_cliente;
+    }
+
+    // Insertar la factura con los totales proporcionados, el id_pedido y el id_cliente
+    const insertFacturaText = `
+      INSERT INTO factura (id_pedido, fecha_hora_emision, total_sin_propina, total_con_propina, id_cliente)
+      VALUES ($1, NOW(), $2, $3, $4) RETURNING *;
+    `;
+    const facturaResult = await pool.query(insertFacturaText, [id_pedido, total_sin_propina, total_con_propina, clienteId]);
+    const facturaData = facturaResult.rows[0];
+
+    // Confirmar transacción
+    await pool.query('COMMIT');
+
+    res.json({
+      success: true,
+      message: 'Factura creada con éxito',
+      factura: facturaData,
+      cliente: {
+        id_cliente: clienteId,
+        ...cliente
+      }
+    });
+
+  } catch (error) {
+    await pool.query('ROLLBACK'); // Revertir cambios en caso de error
+    console.error('Error al crear la factura:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al procesar la solicitud',
+      error: error.message
+    });
+  }
+});
+
+
 
 //COnfimar orden Endpoint
 

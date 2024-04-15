@@ -70,12 +70,15 @@ const SeleccionMesaNoFumadores = () => {
 
   // Manjear apertura y cierre de factura
   const handleAbrirFactura = () => {
+    localStorage.setItem('selectedMesa', selectedMesa);
     console.log('Redirigiendo a Tomar Orden para la mesa:', selectedMesa);
     navigate('/tomar-orden', { state: { mesaId: selectedMesa, area: 'fumadores' } });
   };
 
   const handleCerrarFactura = () => {
-    navigate('/pago', { state: { mesaId: selectedMesa } });
+    localStorage.setItem('selectedMesa', selectedMesa);
+    console.log('Redirigiendo al pago para la mesa:', selectedMesa);
+    navigate('/cerrar-factura', { state: { mesaId: selectedMesa } });
   };
 
   
