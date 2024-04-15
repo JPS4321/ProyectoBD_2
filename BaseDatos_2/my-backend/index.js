@@ -352,6 +352,114 @@ app.post('/api/crear-pedido', async (req, res) => {
 });
 
 
+
+
+//ReVIEW
+
+app.post('/api/encuesta', async (req, res) => {
+  const { id_pedido, amabilidad_mesero, calidad_comida, exactitud_pedido } = req.body;
+
+  try {
+    const nuevaEncuesta = await pool.query(
+      'INSERT INTO encuesta (id_pedido, amabilidad_mesero, calidad_comida, exactitud_pedido) VALUES ($1, $2, $3, $4) RETURNING *',
+      [id_pedido, amabilidad_mesero, calidad_comida, exactitud_pedido]
+    );
+
+    res.json({
+      mensaje: 'Encuesta guardada con éxito',
+      encuesta: nuevaEncuesta.rows[0]
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Error al guardar la encuesta');
+  }
+});
+
+// Obtener todos los usuarios
+app.get('/api/usuarios', async (req, res) => {
+  try {
+    const resultado = await pool.query('SELECT id_usuario, nombre FROM usuario');
+    res.json(resultado.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Error al obtener los usuarios');
+  }
+});
+
+// Obtener todos los ítems
+app.get('/api/items', async (req, res) => {
+  try {
+    const resultado = await pool.query('SELECT id_item, nombre FROM item');
+    res.json(resultado.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Error al obtener los ítems');
+  }
+});
+
+
+app.get('/api/factura-cliente/:id_factura', async (req, res) => {
+  try {
+    const { id_factura } = req.params;
+    const resultado = await pool.query('SELECT id_cliente FROM factura WHERE id_factura = $1', [id_factura]);
+    
+    if (resultado.rows.length > 0) {
+      const id_cliente = resultado.rows[0].id_cliente;
+      res.json({ id_cliente });
+    } else {
+      res.status(404).send('Factura no encontrada');
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Error al obtener el cliente de la factura');
+  }
+});
+
+app.post('/api/queja', async (req, res) => {
+  const { id_pedido, id_cliente, motivo, clasificacion, id_personal, id_item } = req.body;
+
+  try {
+    const nuevaQueja = await pool.query(
+      'INSERT INTO queja (id_cliente, id_pedido, motivo, clasificacion, id_personal, id_item) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [id_cliente, id_pedido, motivo, clasificacion, id_personal, id_item]
+    );
+
+    res.json({
+      mensaje: 'Queja guardada con éxito',
+      queja: nuevaQueja.rows[0]
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Error al guardar la queja');
+  }
+});
+
+app.put('/api/cerrar-pedido', async (req, res) => {
+  const { id_pedido } = req.body; // Este valor debe ser enviado en el cuerpo de la solicitud
+  const hora_cierre = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+  try {
+    const updatePedidoText = `
+      UPDATE pedido
+      SET hora_cierre = $1, estado_pedido = 'Cerrado'
+      WHERE id_pedido = $2 AND estado_pedido != 'Cerrado';
+    `;
+    const response = await pool.query(updatePedidoText, [hora_cierre, id_pedido]);
+
+    if (response.rowCount === 0) {
+      // No se actualizó ningún pedido, puede ser que no exista o ya estaba cerrado
+      return res.status(404).json({ message: 'Pedido no encontrado o ya estaba cerrado.' });
+    }
+
+    res.json({ message: 'Pedido cerrado exitosamente.' });
+  } catch (error) {
+    console.error('Error al cerrar el pedido:', error);
+    res.status(500).json({ message: 'Error al procesar la solicitud.' });
+  }
+});
+
+
+
 app.use(router);
 
 const PORT = process.env.PORT || 3001;

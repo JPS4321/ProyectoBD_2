@@ -49,7 +49,6 @@ const Opciones = () => {
     },
   };
   console.log(user); // Suponiendo que 'nombre' es una de las propiedades del objeto usuario
-  localStorage.setItem('Id_facturaActual', 6);
 
   return (
     <div style={styles.container}>

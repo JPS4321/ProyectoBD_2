@@ -10,8 +10,10 @@ const FormaDePago = () => {
   const [cantidadAPagar, setCantidadAPagar] = useState('');
 
   useEffect(() => {
+    
     const fetchTotalAPagar = async () => {
       const id_facturaActual = localStorage.getItem('Id_facturaActual');
+
       if (id_facturaActual) {
         try {
           const response = await fetch(`http://localhost:3001/api/factura-total/${id_facturaActual}`);
@@ -31,14 +33,15 @@ const FormaDePago = () => {
     fetchTotalAPagar();
   }, []);
 
+  
   const procesarPago = async () => {
-    const montoAPagar = Number(cantidadAPagar);
+    const montoAPagar = parseFloat(cantidadAPagar);
     if (montoAPagar > totalAPagar) {
       alert('La cantidad a pagar no puede ser mayor que el total a pagar.');
       return;
     }
 
-    if (totalAPagar > 0 && montoAPagar <= totalAPagar) {
+    if (montoAPagar <= totalAPagar && montoAPagar > 0) {
       try {
         const id_factura = localStorage.getItem('Id_facturaActual');
         const response = await fetch('http://localhost:3001/api/pagos', {
@@ -53,21 +56,29 @@ const FormaDePago = () => {
           }),
         });
 
-        const data = await response.json();
-        if (response.ok) {
-          setTotalAPagar(prevTotal => prevTotal - montoAPagar);
-          setCantidadAPagar('');
-          if (totalAPagar - montoAPagar === 0) {
-            navigate('/pago-confirmado');
-          }
+        if (!response.ok) throw new Error('Error al procesar el pago.');
+
+        const nuevoTotalAPagar = totalAPagar - montoAPagar;
+        if(nuevoTotalAPagar < 0) {
+          alert('El numero que ingreso es mayor al total a pagar, por favor ingrese un monto menor o igual al total a pagar.');
+        }
+        else{
+        setTotalAPagar(nuevoTotalAPagar);
+        setCantidadAPagar(nuevoTotalAPagar > 0 ? nuevoTotalAPagar.toString() : '');
+      }
+        
+        if (nuevoTotalAPagar === 0) {
+          navigate('/Review');
         } else {
-          throw new Error(data.message || 'Error al procesar el pago');
+          // Actualiza el monto a pagar en el estado local para permitir pagos múltiples
+          alert('El pago se ha realizado correctamente. Resta pagar: ' + nuevoTotalAPagar.toFixed(2));
         }
       } catch (error) {
         console.error('Error al procesar el pago:', error);
+        alert('Ocurrió un error al procesar el pago.');
       }
     } else {
-      alert('El monto a pagar debe ser igual al total a pagar para proceder.');
+      alert('Debe ingresar un monto a pagar.');
     }
   };
 
