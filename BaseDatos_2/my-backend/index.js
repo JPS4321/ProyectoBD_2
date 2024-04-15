@@ -246,8 +246,10 @@ app.post('/api/login', async (req, res) => {
 
     if (data.rows.length > 0) {
       const user = data.rows[0];
+      // Decode the Base64 encoded password stored in the database
+      const storedPassword = Buffer.from(user.contrasena, 'base64').toString('utf8');
 
-      if (user.contrasena === contrasena) {
+      if (storedPassword === contrasena) {
         res.json({ message: 'Login successful', user }); 
       } else {
         res.status(401).json({ error: 'Usuario o contraseña equivocado' });
@@ -260,6 +262,7 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 app.use(router);
 
 
