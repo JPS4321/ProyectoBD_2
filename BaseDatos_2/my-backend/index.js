@@ -352,6 +352,113 @@ app.post('/api/crear-pedido', async (req, res) => {
 });
 
 
+app.post('/api/reportes', async (req, res) => {
+  const { tipoReporte, fechaInicio, fechaFin } = req.body;
+  try {
+      let resultado;
+      switch (tipoReporte) {
+          case 1:
+                  resultado = await pool.query(`
+                  SELECT i.nombre AS Plato, COUNT(dp.id_item) AS Cantidad_Pedida, SUM(dp.cantidad) AS Total_Unidades
+                  FROM pedido p
+                  JOIN detallepedido dp ON p.id_pedido = dp.id_pedido
+                  JOIN item i ON dp.id_item = i.id_item
+                  WHERE p.fecha_de_pedido BETWEEN $1 AND $2
+                  GROUP BY i.nombre
+                  ORDER BY Total_Unidades DESC
+              `, [fechaInicio, fechaFin]);
+              res.json(resultado.rows);              
+              break;
+          case 2:  // Horario con más pedidos
+              resultado = await pool.query(`
+                  SELECT EXTRACT(HOUR FROM p.hora_inicio) AS Hora, COUNT(*) AS Numero_de_Pedidos
+                  FROM pedido p
+                  WHERE p.fecha_de_pedido BETWEEN $1 AND $2
+                  GROUP BY EXTRACT(HOUR FROM p.hora_inicio)
+                  ORDER BY Numero_de_Pedidos DESC
+              `, [fechaInicio, fechaFin]);
+              res.json(resultado.rows);
+              break;
+          case 3:  // Promedio de tiempo comiendo
+              resultado = await pool.query(`
+                  SELECT m.Personas_Mesa AS Numero_de_Personas,
+                  AVG(EXTRACT(EPOCH FROM (p.hora_cierre - p.hora_inicio)) / 60) AS Tiempo_Promedio_Minutos
+                  FROM pedido p
+                  JOIN mesa m ON p.id_mesa = m.pk_mesa
+                  WHERE p.fecha_de_pedido BETWEEN $1 AND $2
+                  GROUP BY m.Personas_Mesa
+                  ORDER BY m.Personas_Mesa
+              `, [fechaInicio, fechaFin]);
+              res.json(resultado.rows);
+              break;
+          case 4:  // Quejas a personal
+              resultado = await pool.query(`
+                  SELECT 
+                      c.nombre AS Nombre_del_Cliente,
+                      u.nombre AS Nombre_del_Personal,
+                      COUNT(q.id_queja) AS Numero_de_Quejas
+                  FROM 
+                      queja q
+                  JOIN 
+                      cliente c ON q.id_cliente = c.id_cliente
+                  JOIN 
+                      usuario u ON q.id_personal = u.id_usuario
+                  WHERE 
+                      q.fecha_hora BETWEEN $1 AND $2
+                  GROUP BY 
+                      c.nombre, u.nombre
+                  ORDER BY 
+                      Numero_de_Quejas DESC
+              `, [fechaInicio, fechaFin]);
+              res.json(resultado.rows);
+              break;
+          
+          case 5: // Quejas agrupadas por plato
+              resultado = await pool.query(`
+                  SELECT i.nombre AS Nombre_del_Plato, COUNT(q.id_queja) AS Numero_de_Quejas
+                  FROM queja q
+                  JOIN item i ON q.id_item = i.id_item
+                  WHERE q.fecha_hora BETWEEN $1 AND $2
+                  GROUP BY i.nombre
+                  ORDER BY Numero_de_Quejas DESC
+              `, [fechaInicio, fechaFin]);
+              res.json(resultado.rows);
+              break;
+          case 6:
+              resultado = await pool.query(`
+                  SELECT 
+                      u.nombre AS Nombre_Mesero,
+                      EXTRACT(YEAR FROM p.fecha_de_pedido) AS Ano,
+                      EXTRACT(MONTH FROM p.fecha_de_pedido) AS Mes,
+                      AVG(e.amabilidad_mesero) AS Promedio_Amabilidad,
+                      AVG(e.calidad_comida) AS Promedio_Calidad_Comida,
+                      AVG(e.exactitud_pedido) AS Promedio_Exactitud_Pedido
+                  FROM 
+                      usuario u
+                  JOIN 
+                      pedido p ON u.id_usuario = p.id_usuario
+                  JOIN 
+                      encuesta e ON p.id_pedido = e.id_pedido
+                  WHERE 
+                      p.fecha_de_pedido BETWEEN $1 AND $2
+                  GROUP BY 
+                      u.nombre, EXTRACT(YEAR FROM p.fecha_de_pedido), EXTRACT(MONTH FROM p.fecha_de_pedido)
+                  ORDER BY 
+                      u.nombre, EXTRACT(YEAR FROM p.fecha_de_pedido), EXTRACT(MONTH FROM p.fecha_de_pedido)
+              `, [fechaInicio, fechaFin]);
+              res.json(resultado.rows);
+              break;
+          default:
+              return res.status(400).json({ error: "Tipo de reporte no especificado o no soportado" });
+      }
+  } catch (error) {
+      console.error('Error al consultar la base de datos:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+
+
 app.use(router);
 
 const PORT = process.env.PORT || 3001;

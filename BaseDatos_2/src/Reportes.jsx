@@ -1,204 +1,124 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 
 const Reportes = () => {
-  const navigate = useNavigate();
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [selectedReport, setSelectedReport] = useState(null);
-  const [numOfPeople, setNumOfPeople] = useState('')
-  const [showDateForReportSix, setShowDateForReportSix] = useState(false);
+    const [fechaInicio, setFechaInicio] = useState(localStorage.getItem("fechaInicio") || '');
+    const [fechaFin, setFechaFin] = useState(localStorage.getItem("fechaFin") || '');
+    const [reportType, setReportType] = useState('1');
+    const [reportData, setReportData] = useState([]);
 
-  const handleSelectReport = (reportNumber) => {
-    setSelectedReport(reportNumber);
-    // Resetear los estados de fecha y cantidad de personas al seleccionar un nuevo reporte
-    setStartDate('');
-    setEndDate('');
-    setNumOfPeople('');
-    setShowDateForReportSix(reportNumber === 6);
-  };
+    useEffect(() => {
+        localStorage.setItem("fechaInicio", fechaInicio);
+        localStorage.setItem("fechaFin", fechaFin);
+    }, [fechaInicio, fechaFin]);
 
-  const handleSearchReport = () => {
-    console.log(
-      "Buscar reporte con fecha inicial:",
-      startDate,
-      "y fecha final:",
-      endDate
+    const handleFetchReport = () => {
+        fetch('http://localhost:3001/api/reportes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tipoReporte: parseInt(reportType),
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Datos recibidos:", data);
+            if (!Array.isArray(data)) {
+                console.error("reportData is not an array:", data);
+                throw new Error("Los datos recibidos no son válidos.");
+            }
+            setReportData(data);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            alert('Error al recuperar los datos: ' + error.message);
+        });
+    };
+
+    const styles = {
+        container: {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "100vh",
+            width: "100vw",
+            backgroundColor: "#ADD8E6", 
+            textAlign: "center",
+            padding: "20px",
+            boxSizing: "border-box",
+        },
+        button: {
+            padding: "10px 20px",
+            margin: "5px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            borderRadius: "5px",
+            backgroundColor: "white",
+            color: "black",
+            border: "1px solid #ccc",
+        },
+        input: {
+            padding: '0.5rem',
+            margin: '0.5rem',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            backgroundColor: "white",
+            color: "black",
+        },
+        select: {
+            margin: 20,
+            padding: 10,
+            fontSize: "1rem",
+            backgroundColor: "white",
+            color: "black",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+        },
+        resultText: {
+            color: "#000000", 
+        }
+    };
+
+    return (
+        <div style={styles.container}>
+            <select style={styles.select} value={reportType} onChange={(e) => setReportType(e.target.value)}>
+                <option value="1">Reporte 1: Platos más pedidos</option>
+                <option value="2">Reporte 2: Horario con más pedidos</option>
+                <option value="3">Reporte 3: Promedio de tiempo comiendo</option>
+                <option value="4">Reporte 4: Quejas por persona</option>
+                <option value="5">Reporte 5: Quejas por plato</option>
+                <option value="6">Reporte 6: Eficiencia de meseros</option>
+            </select>
+            <input type="date" style={styles.input} value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} />
+            <input type="date" style={styles.input} value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
+            <button style={styles.button} onClick={handleFetchReport}>Buscar Reporte</button>
+            <div>
+                {reportData.map((item, index) => (
+                    <div key={index} style={{ padding: '10px', margin: '5px' }}>
+                        {/* Aplicar el estilo resultText a cada elemento de resultado */}
+                        {reportType === '1' && <p style={styles.resultText}>{item.plato}: Cantidad Pedida - {item.cantidad_pedida}, Total Unidades - {item.total_unidades}</p>}
+                        {reportType === '2' && <p style={styles.resultText}>Hora: {item.hora}, Número de Pedidos: {item.numero_de_pedidos}</p>}
+                        {reportType === '3' && <p style={styles.resultText}>{item.numero_de_personas} personas: Tiempo promedio - {item.tiempo_promedio_minutos} minutos</p>}
+                        {reportType === '4' && (
+                            <div>
+                                <p style={styles.resultText}>Cliente: {item.nombre_del_cliente}</p>
+                                <p style={styles.resultText}>Personal implicado: {item.nombre_del_personal}</p>
+                                <p style={styles.resultText}>Número de Quejas: {item.numero_de_quejas}</p>
+                            </div>
+                        )}
+                        {reportType === '5' && <p style={styles.resultText}>{item.nombre_del_plato}: {item.numero_de_quejas} quejas</p>}
+                        {reportType === '6' && (
+                            <p style={styles.resultText}>{item.nombre_mesero}: Amabilidad - {item.promedio_amabilidad}, Calidad - {item.promedio_calidad_comida}, Exactitud - {item.promedio_exactitud_pedido}</p>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
     );
-    // Aquí se agregará la lógica para buscar el reporte
-    // Esta función podría enviar la solicitud al backend o actualizar el estado para mostrar el reporte
-  };
-
-  // Estilos para la página
-  const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      flexWrap: "wrap",
-      alignItems: "center",
-      justifyContent: "center",
-      minHeight: "100vh",
-      width: "100vw",
-      backgroundColor: "#ADD8E6",
-      textAlign: "center",
-      padding: "20px",
-      boxSizing: "border-box",
-    },
-    buttonsContainer: {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      alignItems: "center",
-      width: "100%",
-      margin: "20px 0",
-      color: "black",
-    },
-    title: {
-      margin: "20px 0",
-      fontSize: "2.5rem",
-      color: "black",
-    },
-    instructionList: {
-      listStyleType: "none",
-      padding: 0,
-      margin: "20px 0",
-    },
-    instructionItem: {
-      marginBottom: "10px",
-      color: "black",
-    },
-    button: {
-      padding: "10px 20px",
-      margin: "5px", 
-      fontSize: "1rem",
-      cursor: "pointer",
-      borderRadius: "5px",
-      backgroundColor: "white",
-      color: "black",
-      border: "1px solid #ccc",
-    },
-    input: {
-      padding: '0.5rem',
-      margin: '0.5rem',
-      border: '1px solid #ccc',
-      borderRadius: '5px',
-      backgroundColor: "white",
-      color: "black",
-    },
-    label: {
-      display: 'block',
-      margin: '0.5rem 0',
-      color: "black",
-    },
-    otrosTitulos: {
-      color: "black",
-    }
-  };
-
-  const dateRangeStyles = {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    margin: "20px 0",
-  };
-
-  return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Reportes</h1>
-      <ul style={styles.instructionList}>
-        <li style={styles.instructionItem}>
-          1. Platos más pedidos por los clientes en un rango de fechas.
-        </li>
-        <li style={styles.instructionItem}>
-          2. Horario en el que se ingresan más pedidos entre un rango de fechas.
-        </li>
-        <li style={styles.instructionItem}>
-          3. Promedio de tiempo en que se tardan los clientes en comer,
-          agrupando la cantidad de personas comiendo.
-        </li>
-        <li style={styles.instructionItem}>
-          4. Quejas agrupadas por persona para un rango de fechas.
-        </li>
-        <li style={styles.instructionItem}>
-          5. Quejas agrupadas por plato para un rango de fechas.
-        </li>
-        <li style={styles.instructionItem}>
-          6. Eficiencia de meseros mostrando los resultados de las encuestas,
-          agrupado por personas y por mes para los últimos 6 meses.
-        </li>
-      </ul>
-      <div style={styles.buttonsContainer}>
-        {[...Array(6).keys()].map((number) => (
-          <button
-            key={number}
-            style={styles.button}
-            onClick={() => handleSelectReport(number + 1)}
-          >
-            Reporte {number + 1}
-          </button>
-        ))}
-      </div>
-
-      {[1, 2, 4, 5].includes(selectedReport) && (
-        <div style={dateRangeStyles}>
-          <h3 style={styles.otrosTitulos}>{`Fecha para reporte ${selectedReport}`}</h3>
-          <label style={styles.label}>
-            Fecha inicial:
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              style={styles.input}
-            />
-          </label>
-          <label style={styles.label}>
-            Fecha final: 
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              style={styles.input}
-            />
-          </label>
-          <button style={styles.button} onClick={handleSearchReport}>
-            Buscar Reporte
-          </button>
-        </div>
-      )}
-
-      {selectedReport === 3 && (
-        <div style={dateRangeStyles}>
-          <h3 style={styles.otrosTitulos}>Reporte 3: Cantidad de personas</h3>
-          <label style={styles.label}>
-            Cantidad de personas:
-            <input
-              type="number"
-              min="1"
-              value={numOfPeople}
-              onChange={(e) => setNumOfPeople(e.target.value)}
-              style={styles.input}
-            />
-          </label>
-          {/* Incluir campos de fecha si es necesario para este reporte */}
-          {/* ... */}
-          <button style={styles.button} onClick={handleSearchReport}>
-            Buscar Reporte
-          </button>
-        </div>
-      )}
-
-      {showDateForReportSix && (
-        <div style={dateRangeStyles}>
-          {/* Aquí puedes poner los campos de fecha para el reporte 6 */}
-          <button style={styles.button} onClick={handleSearchReport}>
-            Buscar Reporte
-          </button>
-        </div>
-      )}
-
-    </div>
-  );
 };
 
 export default Reportes;
