@@ -30,56 +30,79 @@ const FormaDePago = () => {
       }
     };
 
+    const obtenerIdCliente = async () => {
+      const id_facturaActual = localStorage.getItem('Id_facturaActual');
+      if (id_facturaActual) {
+        try {
+          const response = await fetch(`http://localhost:3001/api/factura-cliente/${id_facturaActual}`);
+          const data = await response.json();
+          if (response.ok) {
+            console.log('ID del cliente obtenido:', data.id_cliente);
+            localStorage.setItem('id_cliente', data.id_cliente);
+            return data.id_cliente; // Devuelve el ID del cliente obtenido
+          } else {
+            throw new Error('No se pudo obtener el ID del cliente');
+          }
+        } catch (error) {
+          console.error('Error al obtener el ID del cliente:', error);
+          throw error; 
+        }
+      }
+      return null;
+    };
+
+    obtenerIdCliente();
     fetchTotalAPagar();
   }, []);
 
   
+
+  
   const procesarPago = async () => {
-    const montoAPagar = parseFloat(cantidadAPagar);
+    const montoAPagar = parseFloat(pagoEfectivo);
+    if (isNaN(montoAPagar) || montoAPagar <= 0) {
+      alert('Debe ingresar un monto a pagar válido.');
+      return;
+    }
+  
     if (montoAPagar > totalAPagar) {
       alert('La cantidad a pagar no puede ser mayor que el total a pagar.');
       return;
     }
-
-    if (montoAPagar <= totalAPagar && montoAPagar > 0) {
-      try {
-        const id_factura = localStorage.getItem('Id_facturaActual');
-        const response = await fetch('http://localhost:3001/api/pagos', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id_factura,
-            monto: montoAPagar,
-            forma_pago: metodoPago,
-          }),
-        });
-
-        if (!response.ok) throw new Error('Error al procesar el pago.');
-
-        const nuevoTotalAPagar = totalAPagar - montoAPagar;
-        if(nuevoTotalAPagar < 0) {
-          alert('El numero que ingreso es mayor al total a pagar, por favor ingrese un monto menor o igual al total a pagar.');
-        }
-        else{
-        setTotalAPagar(nuevoTotalAPagar);
-        setCantidadAPagar(nuevoTotalAPagar > 0 ? nuevoTotalAPagar.toString() : '');
+  
+    try {
+      const id_factura = localStorage.getItem('Id_facturaActual');
+      const response = await fetch('http://localhost:3001/api/pagos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id_factura,
+          monto: montoAPagar,
+          forma_pago: metodoPago,
+        }),
+      });
+  
+      if (!response.ok) throw new Error('Error al procesar el pago.');
+  
+      const result = await response.json();
+      const nuevoTotalAPagar = totalAPagar - montoAPagar;
+  
+      setTotalAPagar(nuevoTotalAPagar);
+      setPagoEfectivo('');
+  
+      if (nuevoTotalAPagar === 0) {
+        navigate('/Review');
+      } else {
+        alert(`El pago se ha realizado correctamente. Resta pagar: ${nuevoTotalAPagar.toFixed(2)}`);
       }
-        
-        if (nuevoTotalAPagar === 0) {
-          navigate('/Review');
-        } else {
-          alert('El pago se ha realizado correctamente. Resta pagar: ' + nuevoTotalAPagar.toFixed(2));
-        }
-      } catch (error) {
-        console.error('Error al procesar el pago:', error);
-        alert('Ocurrió un error al procesar el pago.');
-      }
-    } else {
-      alert('Debe ingresar un monto a pagar.');
+    } catch (error) {
+      console.error('Error al procesar el pago:', error);
+      alert('Ocurrió un error al procesar el pago.');
     }
   };
+  
 
   
   const styles = {

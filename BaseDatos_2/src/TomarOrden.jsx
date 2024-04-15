@@ -130,7 +130,7 @@ const handleSelectChange = (e) => {
           onChange={(e) => setCantidad(parseInt(e.target.value, 10))}
           style={styles.input}
         />
-         {productoId && ( // Aquí usamos productoId para verificar si algo está seleccionado
+         {productoId && (
       <>
         <h2 style={{ color: 'black' }}>Descripción</h2>
         <p style={{ color: 'black' }}>{descripcionSeleccionada}</p>

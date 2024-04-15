@@ -519,12 +519,13 @@ app.get('/api/factura-cliente/:id_factura', async (req, res) => {
 });
 
 app.post('/api/queja', async (req, res) => {
-  const { id_pedido, id_cliente, motivo, clasificacion, id_personal, id_item } = req.body;
+  const { id_cliente, motivo, clasificacion, id_personal, id_item } = req.body;
 
   try {
     const nuevaQueja = await pool.query(
-      'INSERT INTO queja (id_cliente, id_pedido, motivo, clasificacion, id_personal, id_item) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [id_cliente, id_pedido, motivo, clasificacion, id_personal, id_item]
+      `INSERT INTO queja (id_cliente, fecha_hora, motivo, clasificacion, id_personal, id_item) 
+       VALUES ($1, NOW(), $2, $3, $4, $5) RETURNING *`,
+      [id_cliente, motivo, clasificacion, id_personal, id_item]
     );
 
     res.json({
@@ -532,10 +533,13 @@ app.post('/api/queja', async (req, res) => {
       queja: nuevaQueja.rows[0]
     });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send('Error al guardar la queja');
+    console.error('Error al guardar la queja:', error);
+    res.status(500).json({ error: error.message });
   }
 });
+
+
+
 
 app.put('/api/cerrar-pedido', async (req, res) => {
   const { id_pedido } = req.body; // Este valor debe ser enviado en el cuerpo de la solicitud

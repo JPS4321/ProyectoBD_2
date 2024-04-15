@@ -53,15 +53,15 @@ const Review = () => {
 
   const enviarReview = async () => {
     const id_pedido = localStorage.getItem('pedidoactual'); 
-    const id_cliente = await obtenerIdCliente();
+    const id_cliente =  localStorage.getItem('id_cliente');
   
     if (tieneQueja) {
       const quejaData = {
         id_cliente,
         motivo: motivoQueja,
         clasificacion: tipoQueja === "personal" ? 1 : 2,
-        id_personal: tipoQueja === "personal" ? personalQueja : null,
-        id_item: tipoQueja === "comida" ? comidaQueja : null
+        id_personal: tipoQueja === "personal" && personalQueja ? personalQueja : null,
+        id_item: tipoQueja === "comida" && comidaQueja ? parseInt(comidaQueja) : null
       };
       
   
@@ -116,7 +116,6 @@ const Review = () => {
   };
 
   const obtenerIdCliente = async () => {
-      
     const id_facturaActual = localStorage.getItem('Id_facturaActual');
     if (id_facturaActual) {
       try {
@@ -125,14 +124,19 @@ const Review = () => {
         if (response.ok) {
           console.log('ID del cliente obtenido:', data.id_cliente);
           setIdCliente(data.id_cliente);
+          localStorage.setItem('id_cliente', data.id_cliente);
+          return data.id_cliente; // Devuelve el ID del cliente obtenido
         } else {
           throw new Error('No se pudo obtener el ID del cliente');
         }
       } catch (error) {
         console.error('Error al obtener el ID del cliente:', error);
+        throw error; 
       }
     }
+    return null;
   };
+  
   
 
   const cerrarPedido = async () => {
@@ -354,32 +358,35 @@ const Review = () => {
               </div>
             </div>
             {tipoQueja === "personal" && (
-                <select
-                  style={styles.select}
-                  value={personalQueja}
-                  onChange={(e) => setPersonalQueja(e.target.value)}
-                >
-                  {usuarios.map((usuario) => (
-                    <option key={usuario.id_usuario} value={usuario.id_usuario}>
-                      {usuario.nombre}
-                    </option>
-                  ))}
-                </select>
-              )}
+  <select
+    style={styles.select}
+    value={personalQueja}
+    onChange={(e) => setPersonalQueja(e.target.value)}
+  >
+    <option value="">Seleccione personal...</option>
+    {usuarios.map((usuario) => (
+      <option key={usuario.id_usuario} value={usuario.id_usuario}>
+        {usuario.nombre}
+      </option>
+    ))}
+  </select>
+)}
 
-        {tipoQueja === "comida" && (
-              <select
-                style={styles.select}
-                value={comidaQueja}
-                onChange={(e) => setComidaQueja(e.target.value)}
-              >
-                {items.map((item) => (
-                  <option key={item.id_item} value={item.id_item}>
-                    {item.nombre}
-                  </option>
-                ))}
-              </select>
-            )}
+{tipoQueja === "comida" && (
+  <select
+    style={styles.select}
+    value={comidaQueja}
+    onChange={(e) => setComidaQueja(e.target.value)}
+  >
+    <option value="">Seleccione un plato...</option>
+    {items.map((item) => (
+      <option key={item.id_item} value={item.id_item}>
+        {item.nombre}
+      </option>
+    ))}
+  </select>
+)}
+
           </div>
         )}
 
