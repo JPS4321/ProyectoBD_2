@@ -52,8 +52,8 @@ const Review = () => {
   };
 
   const enviarReview = async () => {
-    const id_pedido = localStorage.getItem('pedidoactual'); // Asegúrate de tener este valor en el localStorage
-    const id_cliente = await obtenerIdCliente(); // Asumiendo que tienes esta función que devuelve el id del cliente
+    const id_pedido = localStorage.getItem('pedidoactual'); 
+    const id_cliente = await obtenerIdCliente();
   
     if (tieneQueja) {
       const quejaData = {
@@ -105,7 +105,7 @@ const Review = () => {
       const result = await response.json();
       if (response.ok) {
         console.log('Review enviada con éxito:', result);
-        navigate('/opciones'); // Redirecciona a una página de agradecimiento o la que prefieras
+        navigate('/opciones'); 
       } else {
         throw new Error(result.message || 'Error al enviar la review.');
       }
@@ -130,14 +130,13 @@ const Review = () => {
         }
       } catch (error) {
         console.error('Error al obtener el ID del cliente:', error);
-        // Manejar el error en la interfaz de usuario
       }
     }
   };
   
 
   const cerrarPedido = async () => {
-    const id_pedido = localStorage.getItem('pedidoactual'); // Asegúrate de que este valor está establecido correctamente
+    const id_pedido = localStorage.getItem('pedidoactual'); 
   
     try {
       const response = await fetch('http://localhost:3001/api/cerrar-pedido', {
@@ -151,7 +150,6 @@ const Review = () => {
       const result = await response.json();
       if (response.ok) {
         console.log('Pedido cerrado:', result);
-        // Aquí puedes redirigir al usuario o mostrar un mensaje de éxito
       } else {
         throw new Error(result.message || 'No se pudo cerrar el pedido.');
       }
@@ -183,7 +181,7 @@ const Review = () => {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      width: "500px", // Ajusta al tamaño que necesites
+      width: "500px", 
     },
     title: {
       fontSize: "2rem",
@@ -258,7 +256,7 @@ const Review = () => {
 
   const activeButtonStyle = {
     ...buttonStyle,
-    backgroundColor: "#4CAF50", // Color para el botón activo
+    backgroundColor: "#4CAF50", 
     color: "white",
   };
 
@@ -328,7 +326,7 @@ const Review = () => {
             <label style={styles.label}>
               Motivo de la queja
               <textarea
-                style={{ ...styles.input, width: "100%", margin: "10px 0" }} // Ajustar para que ocupe el 100% del ancho disponible
+                style={{ ...styles.input, width: "100%", margin: "10px 0" }} 
                 value={motivoQueja}
                 onChange={(e) => setMotivoQueja(e.target.value)}
               />

@@ -5,13 +5,13 @@ const RevisarOrden = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { pedido } = location.state; // Asegúrate de que 'pedido' está siendo pasado en el estado.
+  const { pedido } = location.state; 
 
   console.log('Pedido recibido en RevisarOrden:', pedido);
 
   const confirmarPedido = async () => {
-    const selectedMesa = localStorage.getItem('selectedMesa'); // ID de la mesa de localStorage
-    const storedUser = localStorage.getItem('user'); // Información del usuario guardada en localStorage
+    const selectedMesa = localStorage.getItem('selectedMesa'); 
+    const storedUser = localStorage.getItem('user'); 
     const user = storedUser ? JSON.parse(storedUser) : null;
     
     if (!user || !user.id_usuario) {
@@ -19,19 +19,18 @@ const RevisarOrden = () => {
       return;
     }
 
-    const fechaPedido = new Date().toISOString().slice(0, 10); // Formato YYYY-MM-DD
-    const horaInicio = new Date().toLocaleTimeString('en-US', { hour12: false }); // Formato HH:MM:SS
+    const fechaPedido = new Date().toISOString().slice(0, 10); 
+    const horaInicio = new Date().toLocaleTimeString('en-US', { hour12: false }); 
 
-    // Prepara el cuerpo del pedido para enviar al servidor
     const datosPedido = {
       id_mesa: selectedMesa,
       id_usuario: user.id_usuario,
       fecha_pedido: fechaPedido,
       hora_inicio: horaInicio,
-      detalles: pedido.map(item => ({ // Mapea los detalles del pedido adecuadamente
+      detalles: pedido.map(item => ({ 
         id_item: item.id_item,
         cantidad: item.cantidad,
-        subtotal: item.subtotal // Asume que el subtotal viene en el pedido
+        subtotal: item.subtotal 
       })),
     };
     console.log('Datos del pedido que se enviarán:', datosPedido);
@@ -53,7 +52,6 @@ const RevisarOrden = () => {
         throw new Error(data.message || 'Error al realizar la solicitud.');
       }
 
-      // Redirigir a la página de confirmación o mostrar un mensaje de éxito
       navigate('/seleccion-area', {
         replace: true,
         state: { pedidoId: data.id_pedido, mensaje: 'Pedido confirmado con éxito' },
@@ -65,7 +63,6 @@ const RevisarOrden = () => {
     }
   };
 
-  // Aquí van tus estilos, pueden ser ajustados según tus necesidades.
   const styles = {
     container: {
       display: 'flex',
@@ -95,13 +92,13 @@ const RevisarOrden = () => {
       margin: '10px',
       border: 'none',
       borderRadius: '5px',
-      backgroundColor: '#4CAF50', // Verde para el botón
+      backgroundColor: '#4CAF50', 
       color: 'white',
       cursor: 'pointer',
     },
     title: {
-      color: '#000', // Texto negro para el título
-      marginBottom: '1rem', // Espacio debajo del título
+      color: '#000', 
+      marginBottom: '1rem', 
     },
   };
 

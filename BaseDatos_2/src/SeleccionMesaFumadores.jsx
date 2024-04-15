@@ -6,7 +6,6 @@ const SeleccionMesaFumadores = () => {
   const [mesas, setMesas] = useState([]);
   const [selectedMesa, setSelectedMesa] = useState(null);
 
-  // Función para cargar las mesas según área y zona de fumadores
   const cargarMesas = async (areaId, isSmokingArea) => {
     try {
       const response = await fetch(`http://localhost:3001/api/mesas-disponibles/${areaId}?es_para_fumadores=${isSmokingArea}`);
@@ -18,7 +17,6 @@ const SeleccionMesaFumadores = () => {
     }
   };
 
-  // Obtener la selección guardada y cargar mesas
   const obtenerSeleccionGuardada = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/obtener-seleccion');
@@ -68,7 +66,6 @@ const SeleccionMesaFumadores = () => {
   };
   
 
-  // Manjear apertura y cierre de factura
   const handleAbrirFactura = () => {
     localStorage.setItem('selectedMesa', selectedMesa);
     console.log('Redirigiendo a Tomar Orden para la mesa:', selectedMesa);
@@ -83,7 +80,6 @@ const SeleccionMesaFumadores = () => {
 
   
 
-  // Estilos para diferentes componentes del UI
   const styles = {
     container: {
       width: '100vw',

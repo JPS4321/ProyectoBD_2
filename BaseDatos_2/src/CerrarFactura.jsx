@@ -20,7 +20,6 @@ const CerrarFactura = () => {
     const fetchDetallesPedido = async () => {
       setLoading(true);
   
-      // Obtén el id de la mesa seleccionada del localStorage
       const id_mesa = localStorage.getItem('selectedMesa');
       if (!id_mesa) {
         console.error('No se encontró el id de la mesa en localStorage.');
@@ -29,27 +28,22 @@ const CerrarFactura = () => {
       }
   
       try {
-        // Primero, obtén el id_pedido asociado con el id de la mesa
         const responsePedidosAbiertos = await fetch(`http://localhost:3001/api/pedidos-abiertos/${id_mesa}`);
         const pedidosAbiertos = await responsePedidosAbiertos.json();
         
-        // Si no hay pedidos abiertos, no continuar
         if (pedidosAbiertos.length === 0) {
           console.error('No hay pedidos abiertos para esta mesa.');
           setLoading(false);
           return;
         }
         
-        // Asumimos que nos interesa el primer pedido abierto
         const id_pedido = pedidosAbiertos[0].id_pedido;
         localStorage.setItem('pedidoactual', id_pedido);
 
         
-        // Ahora obtén los detalles del pedido usando el id_pedido
         const responseDetalles = await fetch(`http://localhost:3001/api/detalles-pedido/${id_pedido}`);
         const detalles = await responseDetalles.json();
   
-        // Luego obtén los detalles de cada ítem en el pedido
         const detallesConItems = await Promise.all(detalles.map(async (detalle) => {
           try {
             const res = await fetch(`http://localhost:3001/api/items/${detalle.id_item}`);
@@ -70,36 +64,30 @@ const CerrarFactura = () => {
     };
   
     fetchDetallesPedido();
-  }, []); // Puedes agregar id_mesa como dependencia si es necesario que se actualice cuando cambie el valor en localStorage
-  
+  }, []); 
 
 
   
   
   const procederAPagar = async () => {
-    // Obtén el total del pedido y calcula la propina
-    const totalDelPedido = calcularTotalPedido(); // Esta función debe devolver el total del pedido
-    const propina = totalDelPedido * 0.10; // Calcula el 10% de propina
+    const totalDelPedido = calcularTotalPedido(); 
+    const propina = totalDelPedido * 0.10; 
     const totalConPropina = totalDelPedido + propina;
   
-    // Recupera el id del pedido actual del localStorage
     const id_pedido = localStorage.getItem('pedidoactual');
   
-    // Datos del cliente que vienen de los inputs del formulario
     const cliente = {
-      nombre: nombre, // Ya está en el estado debido a useState
-      direccion: direccion, // Ya está en el estado debido a useState
-      nit: nit, // Ya está en el estado debido a useState
+      nombre: nombre, 
+      direccion: direccion, 
+      nit: nit, 
     };
   
-    // Si no hay un id_pedido, no continuar
     if (!id_pedido) {
       console.error('No hay un id_pedido guardado en localStorage.');
       return;
     }
   
     try {
-      // Envía la solicitud POST al backend con la información de la factura y el cliente
       const response = await fetch('http://localhost:3001/api/facturas', {
         method: 'POST',
         headers: {
@@ -109,7 +97,7 @@ const CerrarFactura = () => {
           id_pedido,
           total_sin_propina: totalDelPedido,
           total_con_propina: totalConPropina,
-          cliente, // Agrega los datos del cliente aquí
+          cliente, 
         }),
       });
   
@@ -118,13 +106,11 @@ const CerrarFactura = () => {
       localStorage.setItem('Id_facturaActual', data.factura.id_factura);
       console.log("Id de la factura actual: ", data.factura.id_factura);
   
-      // Aquí puedes manejar la respuesta de la API, como redirigir al usuario
       console.log('Factura creada con éxito:', data);
-      navigate('/pago', { state: { factura: data } }); // O donde quieras redirigir al usuario
+      navigate('/pago', { state: { factura: data } }); 
   
     } catch (error) {
       console.error('Error al crear la factura:', error);
-      // Manejo de errores en la interfaz de usuario
     }
   };
   
@@ -147,7 +133,7 @@ const CerrarFactura = () => {
       minHeight: "100vh",
       backgroundColor: "#ADD8E6",
       padding: "20px",
-      boxSizing: "border-box", // Asegura que el padding no añada ancho al contenedor
+      boxSizing: "border-box", 
     },
     input: {
       margin: "10px 0",
@@ -164,8 +150,8 @@ const CerrarFactura = () => {
       borderRadius: "5px",
       padding: "20px",
       boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      width: "80%", // Puede usar un porcentaje del ancho de la ventana
-      maxWidth: "600px", // Un máximo para que no se vea demasiado ancho en pantallas grandes
+      width: "80%", 
+      maxWidth: "600px", 
     },
     item: {
       margin: "10px 0",
@@ -179,7 +165,7 @@ const CerrarFactura = () => {
       margin: "10px",
       border: "none",
       borderRadius: "5px",
-      backgroundColor: "#4CAF50", // Verde para el botón
+      backgroundColor: "#4CAF50", 
       color: "white",
       cursor: "pointer",
     },
@@ -188,8 +174,8 @@ const CerrarFactura = () => {
       padding: "10px",
       margin: "10px 0",
       borderRadius: "5px",
-      width: "80%", // Alineado con el contenedor de pedido
-      maxWidth: "600px", // Alineado con el contenedor de pedido
+      width: "80%", 
+      maxWidth: "600px", 
       boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     },
     labelStyles: {

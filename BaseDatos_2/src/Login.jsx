@@ -26,12 +26,7 @@ const Login = () => {
     }
   };
 
-  /* Navegación Kou
-  const handleSubmit = async (event) => {
-    console.log('Usuario autenticado con éxito');
-    navigate('/opciones');
-  };
-  */
+
 
   return (
     <div style={styles.container}>
@@ -59,7 +54,6 @@ const Login = () => {
   );
 };
 
-// Estilos en línea para el componente
 const styles = {
     container: {
         width: '100vw',

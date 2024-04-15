@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const SeleccionArea = () => {
   const navigate = useNavigate();
-  const [area, setArea] = useState(''); // Almacena el nombre del área
-  const [areaId, setAreaId] = useState(null); // Almacena el ID del área
+  const [area, setArea] = useState(''); 
+  const [areaId, setAreaId] = useState(null); 
   const [isSmokingArea, setIsSmokingArea] = useState(null);
 
   const areas = [
@@ -17,7 +17,7 @@ const SeleccionArea = () => {
 
   const handleAreaSelection = (areaSeleccionada) => {
     setArea(areaSeleccionada.nombre);
-    setAreaId(areaSeleccionada.id); // Guarda el ID del área seleccionada
+    setAreaId(areaSeleccionada.id); 
   };
   const handleSmokingSelection = (smoking) => {
     setIsSmokingArea(smoking);
@@ -59,7 +59,6 @@ const SeleccionArea = () => {
   
   
 
-  // Estilos en línea centrados y con la paleta de colores elegida
   const styles = {
     container: {
       width: '100vw',
@@ -68,20 +67,20 @@ const SeleccionArea = () => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#ADD8E6', // Color celeste para el fondo
-      color: '#333', // Color oscuro para el texto
+      backgroundColor: '#ADD8E6', 
+      color: '#333', 
     },
     button: {
       padding: '10px 20px',
       margin: '10px',
-      border: '1px solid #ddd', // Borde sutil
+      border: '1px solid #ddd', 
       borderRadius: '5px',
       cursor: 'pointer',
-      backgroundColor: '#f8f8f8', // Fondo claro para los botones
-      color: '#333', // Color de texto
+      backgroundColor: '#f8f8f8', 
+      color: '#333', 
     },
     selected: {
-      backgroundColor: '#4CAF50', // Verde para la selección
+      backgroundColor: '#4CAF50', 
       color: 'white',
     },
     title: {

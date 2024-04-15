@@ -169,7 +169,6 @@ app.get('/api/detalles-pedido/:id_pedido', async (req, res) => {
   }
 });
 
-// Este endpoint devuelve detalles de un ítem específico por id_item
 app.get('/api/items/:id_item', async (req, res) => {
   try {
     const { id_item } = req.params;
@@ -246,7 +245,6 @@ app.post('/api/login', async (req, res) => {
 
     if (data.rows.length > 0) {
       const user = data.rows[0];
-      // Decode the Base64 encoded password stored in the database
       const storedPassword = Buffer.from(user.contrasena, 'base64').toString('utf8');
 
       if (storedPassword === contrasena) {
@@ -320,10 +318,8 @@ app.post('/api/pagos', async (req, res) => {
   const { id_factura, monto, forma_pago } = req.body;
 
   try {
-    // Inicia una transacción
     await pool.query('BEGIN');
 
-    // Inserta el pago en la base de datos
     const queryText = `
       INSERT INTO pago (id_factura, monto, forma_pago)
       VALUES ($1, $2, $3) RETURNING *;
@@ -342,10 +338,8 @@ app.post('/api/pagos', async (req, res) => {
     // Obtiene el nuevo total a pagar actualizado
     const nuevoTotalAPagar = facturaResult.rows[0].total_con_propina;
 
-    // Si el nuevo total a pagar es 0, cambia el estado de la factura o realiza las acciones necesarias
     if (nuevoTotalAPagar === 0) {
-      // Por ejemplo, actualizar el estado de la factura a 'Pagada'
-      // const facturaPagadaResult = await pool.query(...);
+
     }
 
     // Finaliza la transacción
@@ -372,7 +366,6 @@ app.post('/api/facturas', async (req, res) => {
   const { id_pedido, total_sin_propina, total_con_propina, cliente } = req.body;
 
   try {
-    // Iniciar transacción para manejar las operaciones de la factura y del cliente
     await pool.query('BEGIN');
 
     // Buscar si el cliente ya existe en la base de datos

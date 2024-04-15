@@ -6,7 +6,7 @@ const FormaDePago = () => {
   const [totalAPagar, setTotalAPagar] = useState(0);
   const [pagoEfectivo, setPagoEfectivo] = useState('');
   const [pagoTarjeta, setPagoTarjeta] = useState('');
-  const [metodoPago, setMetodoPago] = useState('Efectivo'); // Estado para manejar el método de pago seleccionado
+  const [metodoPago, setMetodoPago] = useState('Efectivo'); 
   const [cantidadAPagar, setCantidadAPagar] = useState('');
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const FormaDePago = () => {
           const data = await response.json();
           if (response.ok) {
             setTotalAPagar(data.totalAPagar);
-            setCantidadAPagar(data.totalAPagar); // Inicializar cantidad a pagar con el total
+            setCantidadAPagar(data.totalAPagar);
           } else {
             throw new Error(data.message || 'No se pudo obtener el total de la factura');
           }
@@ -70,7 +70,6 @@ const FormaDePago = () => {
         if (nuevoTotalAPagar === 0) {
           navigate('/Review');
         } else {
-          // Actualiza el monto a pagar en el estado local para permitir pagos múltiples
           alert('El pago se ha realizado correctamente. Resta pagar: ' + nuevoTotalAPagar.toFixed(2));
         }
       } catch (error) {
@@ -101,7 +100,7 @@ const FormaDePago = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      width: '500px', // Ajusta al tamaño que necesites
+      width: '500px', 
     },
     title: {
       fontSize: '2rem',
@@ -110,7 +109,7 @@ const FormaDePago = () => {
       color: "black",
     },
     input: {
-      width: '100%', // Para que el input use todo el ancho posible
+      width: '100%', 
       padding: '1rem',
       margin: '0.5rem 0',
       border: '1px solid #ccc',
